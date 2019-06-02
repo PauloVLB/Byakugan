@@ -2,6 +2,7 @@
 #include <ros.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <byakugan/RefletanciaMsg.h>
+#include <byakugan/BotoesMsg.h>
 #include <byakugan/SensoresDistanciaMsg.h>
 
 ros::NodeHandle nh;
@@ -13,6 +14,8 @@ ros::Publisher pubRefletancia("refletancia", &dataRefletancia);
 byakugan::SensoresDistanciaMsg dataSonares;
 ros::Publisher pubSonares("distancia", &dataSonares);
 
+byakugan::BotoesMsg dataBotoes;
+ros::Publisher pubBotoes("botoes", &dataBotoes);
 /*
 std_msgs::Float64MultiArray dataSensoresCor;
 ros::Publisher pubSensoresCor("cor", &dataSensoresCor);
@@ -41,6 +44,7 @@ void setup() {
 
   nh.advertise(pubRefletancia);
   nh.advertise(pubSonares);
+  nh.advertise(pubBotoes);
   //nh.advertise(pubSensoresCor);
 
   robo.configurar(true);
@@ -62,9 +66,13 @@ void loop() {
   dataSensoresCor.data[1] = robo.getHSVEsquerdo().s;
   dataSensoresCor.data[2] = robo.getHSVEsquerdo().v;
   */
+  dataBotoes.botao1.data = robo.botao1Pressionado();
+  dataBotoes.botao2.data = robo.botao2Pressionado();
+  dataBotoes.botao3.data = robo.botao3Pressionado();
 
   pubRefletancia.publish(&dataRefletancia);
   pubSonares.publish(&dataSonares);
+  pubSonares.publish(&dataBotoes);
 //  pubSensoresCor.publish(&dataSensoresCor);
 
   nh.spinOnce();

@@ -72,7 +72,7 @@ void loop() {
 
   pubRefletancia.publish(&dataRefletancia);
   pubSonares.publish(&dataSonares);
-  pubSonares.publish(&dataBotoes);
+  pubBotoes.publish(&dataBotoes);
 //  pubSensoresCor.publish(&dataSensoresCor);
 
   nh.spinOnce();

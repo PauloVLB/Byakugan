@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="byakugan" type="arduino.py" name="arduino"/>
+	<node pkg="byakugan" type="estrategia.py" name="estrategia"/>
+</launch>

@@ -22,8 +22,12 @@ def arduinoCamCb(refle, dist, circulo, botoes):
     distEsq = dist.sensoresDistancia[1]
     distDir = dist.sensoresDistancia[2]
 
+    if botoes.botao1.data:
+        print 'botao 1 pressionado'
     if botoes.botao2.data:
         print 'botao 2 pressionado'
+    if botoes.botao3.data:
+        print 'botao 3 pressionado'
 
     if circulo.existe.data:
         dataMotores.data = [25,-25]

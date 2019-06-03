@@ -17,9 +17,6 @@ def circular(img, circles):
 			center = (x, y)
 			radius = r
 
-			cv2.circle(img, center, 1, (0,100,100), 3) #centro
-			cv2.circle(img, center, radius, (255, 0, 255), 3) #borda
-
 			arrayCoordenadas.data[0] = x
 			arrayCoordenadas.data[1] = y
 			arrayCoordenadas.data[2] = r
@@ -50,10 +47,6 @@ def callback(data):
 	imgCV = ponte.imgmsg_to_cv2(data,"bgr8")
 
 	imgCV = acharCirculos(imgCV)
-
-	cv2.namedWindow('LISTENER_1', cv2.WINDOW_NORMAL)
-	cv2.imshow('LISTENER_1', imgCV)
-	cv2.waitKey(1)
 
 def listenerImg():
 	rospy.init_node('listenerCirculo', anonymous=True)

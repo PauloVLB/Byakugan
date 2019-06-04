@@ -24,6 +24,7 @@ def circular(img, circles):
 			pub.publish(coordenadas)
 	else:
 		circulo.existe.data = False
+		pub.publish(coordenadas)
 	pub2.publish(circulo)
 	return img
 
@@ -45,7 +46,7 @@ def acharCirculos(img):
 def callback(data):
 	ponte = CvBridge()
 	imgCV = ponte.imgmsg_to_cv2(data,"bgr8")
-	imgCV = cv2.resize(imgCV, (400,400))
+	#imgCV = cv2.resize(imgCV, (400,400))
 
 	imgCV = acharCirculos(imgCV)
 

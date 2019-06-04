@@ -11,7 +11,8 @@ from cv_bridge import CvBridge
 
 pubMotores = rospy.Publisher('motores', Int32MultiArray, queue_size=10)
 pubGarra = rospy.Publisher('garra', Int32MultiArray, queue_size=10)
-
+angAnt = 0
+velAnt = 0
 def map(x, in_min, in_max, out_min, out_max):
     if (x > in_max):
         x = in_max
@@ -19,6 +20,7 @@ def map(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 def arduinoCamCb(refle, dist, circulo, botoes, coordenadas):
+    
     maisEsq = refle.refletancia[0]
     esq = refle.refletancia[1]
     dir = refle.refletancia[2]
@@ -34,21 +36,25 @@ def arduinoCamCb(refle, dist, circulo, botoes, coordenadas):
         print 'botao 2 pressionado'
     if botoes.botao3.data:
         print 'botao 3 pressionado'
-
+	
+    #rospy.loginfo(coordenadas.vector)
+    #rospy.loginfo(circulo.existe.data)	
     if circulo.existe.data:
-        ang = map(coordenadas.vector.x, 0, 400, 0, 180)
-        vel = map(coordenadas.vector.x, 0, 400, 0, 70)
-        dataMotores.data = [vel,vel*(-1)]
-        dataGarra.data = [ang, ang]
-        velAnt = vel
-        angAnt = ang
+	if coordenadas.vector.x > 200:
+		dataMotores.data = [25,-25]
+	else:
+		dataMotores.data = [-25, 25]
+	ang = map(coordenadas.vector.x, 0, 400, 0, 179)
+       	dataGarra.data = [ang, ang]
     else:
+	#print 'else'
         dataMotores.data = [0,0]
-        dataGarra.data = [angAnt, angAnt]
-
+        dataGarra.data = [0, 0]
+	
+    #rospy.loginfo(dataMotores.data)
     pubGarra.publish(dataGarra)
     pubMotores.publish(dataMotores)
-
+    
 def arduino_cam():
     rospy.init_node('arduino_cam', anonymous=True)
     subBotoes = message_filters.Subscriber('botoes', BotoesMsg)
@@ -70,8 +76,6 @@ if __name__ == "__main__":
         dataGarra.data = [0, 0]
         dataMotores = Int32MultiArray()
         dataMotores.data = [0, 0]
-        angAnt = 0
-        velAnt = 0
         arduino_cam()
     except rospy.ROSInterruptException:
         pass

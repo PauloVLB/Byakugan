@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
-from std_msgs.msg import Float64MultiArray
+from geometry_msgs.msg import Vector3Stamped
 from byakugan.msg import BoolStamped
 def circular(img, circles):
 	if (circles is not None):
@@ -17,11 +17,11 @@ def circular(img, circles):
 			center = (x, y)
 			radius = r
 
-			arrayCoordenadas.data[0] = x
-			arrayCoordenadas.data[1] = y
-			arrayCoordenadas.data[2] = r
+			coordenadas.vector.x = x
+			coordenadas.vector.y = y
+			coordenadas.vector.z = r
 
-			pub.publish(arrayCoordenadas)
+			pub.publish(coordenadas)
 	else:
 		circulo.existe.data = False
 	pub2.publish(circulo)
@@ -45,6 +45,7 @@ def acharCirculos(img):
 def callback(data):
 	ponte = CvBridge()
 	imgCV = ponte.imgmsg_to_cv2(data,"bgr8")
+	imgCV = cv2.resize(imgCV, (400,400))
 
 	imgCV = acharCirculos(imgCV)
 
@@ -54,11 +55,9 @@ def listenerImg():
 	rospy.spin()
 
 if __name__ == "__main__":
-	pub = rospy.Publisher('coordenadas_circulos', Float64MultiArray, queue_size=10)
+	pub = rospy.Publisher('coordenadas_circulos', Vector3Stamped, queue_size=10)
 	pub2 = rospy.Publisher('tem_circulos', BoolStamped, queue_size=10)
 
 	circulo = BoolStamped()
-	arrayCoordenadas = Float64MultiArray()
-	arrayCoordenadas.data = [0,0,0]
-
+	coordenadas = Vector3Stamped()
 	listenerImg()

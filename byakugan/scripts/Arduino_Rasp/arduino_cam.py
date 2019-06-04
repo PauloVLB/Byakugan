@@ -3,7 +3,8 @@
 import rospy
 import message_filters
 import cv2
-from std_msgs.msg import Int32MultiArray, Float64MultiArray
+from std_msgs.msg import Int32MultiArray
+from geometry_msgs.msg import Vector3Stamped
 from sensor_msgs.msg import Image
 from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, BoolStamped, BotoesMsg
 from cv_bridge import CvBridge
@@ -18,7 +19,6 @@ def map(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 def arduinoCamCb(refle, dist, circulo, botoes, coordenadas):
-
     maisEsq = refle.refletancia[0]
     esq = refle.refletancia[1]
     dir = refle.refletancia[2]
@@ -36,12 +36,15 @@ def arduinoCamCb(refle, dist, circulo, botoes, coordenadas):
         print 'botao 3 pressionado'
 
     if circulo.existe.data:
-        dataMotores.data = [25,-25]
-        ang = map(coordenadas.data[0], 0, 480, 0, 180)
+        ang = map(coordenadas.vector.x, 0, 400, 0, 180)
+        vel = map(coordenadas.vector.x, 0, 400, 0, 70)
+        dataMotores.data = [vel,vel*(-1)]
         dataGarra.data = [ang, ang]
+        velAnt = vel
+        angAnt = ang
     else:
         dataMotores.data = [0,0]
-        dataGarra.data = [0, 0]
+        dataGarra.data = [angAnt, angAnt]
 
     pubGarra.publish(dataGarra)
     pubMotores.publish(dataMotores)
@@ -52,7 +55,7 @@ def arduino_cam():
     subRefle = message_filters.Subscriber('refletancia', RefletanciaMsg)
     subDistancia = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
     subCam = message_filters.Subscriber('tem_circulos', BoolStamped)
-    subCoordenadas = message_filters.Subscriber('/coordenadas_circulos', Float64MultiArray)
+    subCoordenadas = message_filters.Subscriber('/coordenadas_circulos', Vector3Stamped)
 
     ts = message_filters.TimeSynchronizer([subRefle, subDistancia, subCam, subBotoes, subCoordenadas], 20)
 
@@ -63,13 +66,12 @@ def arduino_cam():
 if __name__ == "__main__":
     try:
         ponte = CvBridge()
-        coordenadas = Float64MultiArray()
-        coordenadas.data = [0,0,0,0]
-
         dataGarra = Int32MultiArray()
         dataGarra.data = [0, 0]
         dataMotores = Int32MultiArray()
         dataMotores.data = [0, 0]
+        angAnt = 0
+        velAnt = 0
         arduino_cam()
     except rospy.ROSInterruptException:
         pass

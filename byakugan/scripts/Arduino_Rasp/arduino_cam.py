@@ -54,7 +54,7 @@ def arduino_cam():
     subCam = message_filters.Subscriber('tem_circulos', BoolStamped)
     subCoordenadas = message_filters.Subscriber('/coordenadas_circulos', Float64MultiArray)
 
-    ts = message_filters.TimeSynchronizer([subRefle, subDistancia, subCam, subBotoes], 20)
+    ts = message_filters.TimeSynchronizer([subRefle, subDistancia, subCam, subBotoes, subCoordenadas], 20)
 
     ts.registerCallback(arduinoCamCb)
 

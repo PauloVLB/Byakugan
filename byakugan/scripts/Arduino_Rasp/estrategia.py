@@ -6,7 +6,7 @@ import rospy
 import message_filters
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Int32MultiArray
-from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, Posicao
+from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, BoolGarras
 import time
 
 # publishers
@@ -15,8 +15,9 @@ class Estrategia():
     def __init__(self):
 
         self.pubMotores = rospy.Publisher('motores', Int32MultiArray, queue_size=10)
-        self.pubGarras = rospy.Publisher('garra', Int32MultiArray, queue_size=10)
+        self.pubGarras = rospy.Publisher('estrategia_garra', BoolGarras, queue_size=10)
         self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA 3
+        self.dataGarras = BoolGarras()
 
     def callbackEstrategia(refle, dist):
 
@@ -78,16 +79,27 @@ class Estrategia():
             pubMotoresDelay(200)
 
             ''' TESTE GARRA '''
-            #garras.abaixarBraco()
+            abaixarMao()
 
+    def abaixarBraco():
+        self.dataGarras.braco = False
+        pubGarras.publish(self.dataGarras)
+    def subirBraco():
+        self.dataGarras.braco = True
+        pubGarras.publish(self.dataGarras)
+    def abrirMao():
+        self.dataGarras.braco = True
+        pubGarras.publish(self.dataGarras)
+    def fecharMao():
+        self.dataGarras.braco = False
+        pubGarras.publish(self.dataGarras)
 
     def estrategia():
         rospy.init_node('estrategia', anonymous=True)
         subRefle = message_filters.Subscriber('refletancia', RefletanciaMsg)
         subDistancia = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
-        subPosicao = message_filters.Subscriber('posicao', Posicao)
 
-        ts = message_filters.TimeSynchronizer([subRefle, subDistancia, subPosicao], 10)
+        ts = message_filters.TimeSynchronizer([subRefle, subDistancia], 10)
         ts.registerCallback(callbackEstrategia)
 
         rospy.spin()

@@ -4,9 +4,32 @@
 import rospy
 import time
 from std_msgs.msg import Int32MultiArray
+from std_msgs.msg import Char
+from byakugan.msg import BoolGarras
+
+
+def listener():
+    rospy.Subscriber('estrategia_garra', BoolGarras, callback)
+    rospy.spin()
+
+def callback(estrategia):
+
+    # mao - True: abrir False: fechar
+    # braco - True: subir False: abaixar
+
+    if estrategia.mao:
+        self.abrirMao()
+    else:
+        self.fecharMao()
+
+    if estrategia.braco:
+        self.abrirBraco()
+    else:
+        self.abaixarBraco()
+
 
 class Garras():
-    def __init__(self, pubGarras):
+    def __init__(self):
         # braco
         self.ANG_INICIAL_BAIXAR_BRACO = 80
         self.ANG_FINAL_BAIXAR_BRACO = 10
@@ -61,3 +84,8 @@ class Garras():
         self.setPosicao(self.MAO, self.ANG_INICIAL_ABRIR_MAO, self.ANG_FINAL_FECHAR_MAO)
     def fecharMao():
         self.setPosicao(self.MAO, self.ANG_INICIAL_FECHAR_MAO, self.ANG_FINAL_FECHAR_MAO)
+
+if __name__ == "__main__":
+    rospy.init_node('garras', anonymous=False)
+    pubGarras = rospy.Publisher('controle_garras', Int32MultiArray, queue_size=10
+    self.listener()

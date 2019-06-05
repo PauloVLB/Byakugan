@@ -1,22 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import rospy
 import message_filters
-from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Int32MultiArray
 from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, BoolGarras
-import time
-
-# publishers
 
 class Estrategia():
     def __init__(self):
 
-        self.pubMotores = rospy.Publisher('motores', Int32MultiArray, queue_size=10)
-        self.pubGarras = rospy.Publisher('estrategia_garra', BoolGarras, queue_size=10)
-        self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA 3
+        # publishers
+        # est_motores -> Int32MultiArray?
+        self.pubMotores = rospy.Publisher('est_motores', Int32MultiArray, queue_size=10)
+        self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
+
+        self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
+
+        # garra
+        self.garras = Garras()
         self.dataGarras = BoolGarras()
 
     def callbackEstrategia(refle, dist):
@@ -29,6 +30,7 @@ class Estrategia():
         refleDir = refle.refletancia[2]
         refleMaisDir = refle.refletancia[3]
 
+        # falta testar sonares?
         sonarFrontal = dist.sensoresDistancia[0]
         sonarDir = dist.sensoresDistancia[1]
         sonarEsq = dist.sensoresDistancia[2]
@@ -36,9 +38,6 @@ class Estrategia():
         # datas
         dataMotores = Int32MultiArray()
         dataGarras = Int32MultiArray()
-
-        # garra
-        self.garras = Garras(pubGarras)
 
         if self.posicaoRobo == 1: ''' sala 1 e 2 '''
            # seguir linha
@@ -67,34 +66,34 @@ class Estrategia():
 
             # girar para alinhar
             dataMotores.data = [25, -25]
-            pubMotoresDelay(100)
+            #pubMotoresDelay(100)
             # encostar na parede
             dataMotores.data = [-25, -25]
-            pubMotoresDelay(200)
+            #pubMotoresDelay(200)
             # ir para frente
             dataMotores.data = [25, 25]
-            pubMotoresDelay(200)
+            #pubMotoresDelay(200)
             # encostar na parede
             dataMotores.data = [-25, -25]
-            pubMotoresDelay(200)
+            #pubMotoresDelay(200)
 
             ''' TESTE GARRA '''
             abaixarMao()
 
     def abaixarBraco():
         self.dataGarras.braco = False
-        pubGarras.publish(self.dataGarras)
+        self.pubGarras.publish(self.dataGarras)
     def subirBraco():
         self.dataGarras.braco = True
-        pubGarras.publish(self.dataGarras)
+        self.pubGarras.publish(self.dataGarras)
     def abrirMao():
         self.dataGarras.braco = True
-        pubGarras.publish(self.dataGarras)
+        self.pubGarras.publish(self.dataGarras)
     def fecharMao():
         self.dataGarras.braco = False
-        pubGarras.publish(self.dataGarras)
+        self.pubGarras.publish(self.dataGarras)
 
-    def estrategia():
+    def loop():
         rospy.init_node('estrategia', anonymous=True)
         subRefle = message_filters.Subscriber('refletancia', RefletanciaMsg)
         subDistancia = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
@@ -106,6 +105,7 @@ class Estrategia():
 
 if __name__ == "__main__":
 	try:
-	      self.estrategia()
+        estrategia = Estrategia()
+        estrategia.loop()
 	except rospy.ROSInterruptException:
 		pass

@@ -4,21 +4,23 @@
 import rospy
 import message_filters
 from std_msgs.msg import Int32MultiArray
-from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, BoolGarras
+from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, BoolGarras, CtrlMotores
 
 class Estrategia():
     def __init__(self):
 
         # publishers
-        # est_motores -> Int32MultiArray?
-        self.pubMotores = rospy.Publisher('est_motores', Int32MultiArray, queue_size=10)
+        self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10)
         self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
 
         self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
 
-        # garra
-        self.garras = Garras()
-        self.dataGarras = BoolGarras()
+        # motores
+        self.dataMotores = CtrlMotores() # msg
+
+        # garras
+        self.garras = Garras() # class
+        self.dataGarras = BoolGarras() # msg
 
     def callbackEstrategia(refle, dist):
 
@@ -35,43 +37,40 @@ class Estrategia():
         sonarDir = dist.sensoresDistancia[1]
         sonarEsq = dist.sensoresDistancia[2]
 
-        # datas
-        dataMotores = Int32MultiArray()
-        dataGarras = Int32MultiArray()
 
         if self.posicaoRobo == 1: ''' sala 1 e 2 '''
            # seguir linha
            if(esq > 4 and dir > 4 ): # branco, branco
-               dataMotores.data = [25, 25]
+               emFrente()
            elif (esq > 4 and dir < 4  ): # branco, preto
-               dataMotores.data = [25, -25]
+               direita()
            elif (esq < 4 and dir > 4 ): # preto, branco
-               dataMotores.data = [-25,25]
+               esquerda()
            elif (esq < 4 and dir < 4 ): # preto, preto
-               dataMotores.data = [25, 25]
+               paraTras()
 
         elif self.posicaoRobo == 2: ''' rampa '''
             # subir rampa
             if(esq > 4 and dir > 4): # branco, branco
-                dataMotores.data = [25, 25] # ?
+                emFrenteRampa()
             elif (esq > 4 and dir < 4  ): # branco, preto
-                dataMotores.data = [25, -25] # ?
+                direitaRampa()
             elif (esq < 4 and dir > 4 ): # preto, branco
-                dataMotores.data = [-25,25] # ?
+                esquerdaRampa()
             elif (esq < 4 and dir < 4 ): # preto, preto
-                dataMotores.data = [25, 25] # ?
+                emFrenteRampa()
                 #self.posicao = 3
 
         elif self.posicao == 3: ''' sala 3 '''
 
             # girar para alinhar
-            dataMotores.data = [25, -25]
+            direita()
             #pubMotoresDelay(100)
             # encostar na parede
-            dataMotores.data = [-25, -25]
+            paraTras()
             #pubMotoresDelay(200)
             # ir para frente
-            dataMotores.data = [25, 25]
+            emFrente() ''' !!!!!!!!!!!! NÃO QUERO VELOCIDADE PADRÃO, E AGORA?'''
             #pubMotoresDelay(200)
             # encostar na parede
             dataMotores.data = [-25, -25]
@@ -80,6 +79,57 @@ class Estrategia():
             ''' TESTE GARRA '''
             abaixarMao()
 
+    def emFrente(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.esq = 1
+        dataMotores.dir = 1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+    def esquerda(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.esq = -1
+        dataMotores.dir = 1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+    def direita(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.esq = 1
+        dataMotores.dir = -1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+    def paraTras(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.esq = -1
+        dataMotores.dir = -1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+    def parar(delay=0):
+        dataMotores = CtrlMotores()
+        self.pubMotores.publish(dataMotores)
+
+    def emFrenteRampa(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.rampa = True
+        dataMotores.esq = 1
+        dataMotores.dir = 1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+    def esquerdaRampa(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.rampa = True
+        dataMotores.esq = 1
+        dataMotores.dir = -1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+    def direitaRampa(delay=0):
+        dataMotores = CtrlMotores()
+        dataMotores.rampa = True
+        dataMotores.esq = -1
+        dataMotores.dir = 1
+        dataMotores.delay = delay
+        self.pubMotores.publish(dataMotores)
+
+    # pubs garras
     def abaixarBraco():
         self.dataGarras.braco = False
         self.pubGarras.publish(self.dataGarras)
@@ -87,10 +137,10 @@ class Estrategia():
         self.dataGarras.braco = True
         self.pubGarras.publish(self.dataGarras)
     def abrirMao():
-        self.dataGarras.braco = True
+        self.dataGarras.mao = True
         self.pubGarras.publish(self.dataGarras)
     def fecharMao():
-        self.dataGarras.braco = False
+        self.dataGarras.mao = False
         self.pubGarras.publish(self.dataGarras)
 
     def loop():
@@ -104,8 +154,5 @@ class Estrategia():
         rospy.spin()
 
 if __name__ == "__main__":
-	try:
-        estrategia = Estrategia()
-        estrategia.loop()
-	except rospy.ROSInterruptException:
-		pass
+	estrategia = Estrategia()
+    estrategia.loop()

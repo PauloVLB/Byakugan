@@ -4,6 +4,7 @@
 import rospy
 from std_msgs.msg import Int32MultiArray
 from byakugan.msg import CtrlMotores
+import time
 
 class Motores():
     def __init__(self):
@@ -42,50 +43,51 @@ class Motores():
 
         if not dataMotores.rampa:
             if esqFrente and dirFrente:
-                self.emFrente()
+                self.emFrente(delayPub)
             elif dirFrente:
-                self.esquerda()
+                self.esquerda(delayPub)
             elif esqFrente:
-                self.direita()
+                self.direita(delayPub)
             elif esq < 0 and dir < 0:
-                self.paraTras()
+                self.paraTras(delayPub)
             else:
-                self.parar()
+                self.parar(delayPub)
         elif esqFrente and dirFrente:
-            self.emFrenteRampa()
+            self.emFrenteRampa(delayPub)
         elif dirFrente:
-            self.esquerdaRampa()
+            self.esquerdaRampa(delayPub)
         elif esqFrente:
-            self.direitaRampa()
+            self.direitaRampa(delayPub)
 
-    '''
-        autor: isaacmsl
-        nota:
+    def pubDelayMotores(delay):
+        tInicio = time.time()
+        tAtual = time.time()
+        while tAtual - tInicio <= delay: # TESTAR
+            self.pubMotores(self.dataMotores)
+            tAtual = time.time()
 
-        e a publicação com delay?
-    '''
-    def emFrente(): ''' seguir linha '''
+    def roboEmFrente(delay=0): ''' seguir linha '''
         self.dataMotores = [self.VEL_ESQ_FRENTE, self.VEL_DIR_FRENTE]
-        self.pubMotores(self.dataMotores)
-    def direita():
+        self.pubDelayMotores(delay)
+    def roboDir(delay=0):
         self.dataMotores = [self.VEL_ESQ_FRENTE, self.VEL_DIR_TRAS]
-        self.pubMotores(self.dataMotores)
-    def esquerda():
+        self.pubDelayMotores(delay)
+    def roboEsq(delay=0):
         self.dataMotores = [self.VEL_ESQ_TRAS, self.VEL_DIR_FRENTE]
-        self.pubMotores(self.dataMotores)
-    def paraTras():
+        self.pubDelayMotores(delay)
+    def roboParaTras():
         self.dataMotores = [self.VEL_ESQ_TRAS, self.VEL_DIR_TRAS]
-        self.pubMotores(self.dataMotores)
-    def parar():
+        self.pubDelayMotores(delay)
+    def roboParar():
         self.dataMotores = [0, 0]
-        self.pubMotores(self.dataMotores)
+        self.pubDelayMotores(delay)
 
-    def emFrenteRampa(): ''' subir rampa '''
+    def roboEmFrenteRampa(): ''' subir rampa '''
         self.dataMotores = [self.VEL_ESQ_FRENTE_RAMPA, self.VEL_DIR_FRENTE_RAMPA]
-        self.pubMotores(self.dataMotores)
-    def direitaRampa():
+        self.pubDelayMotores(delay)
+    def roboDirRampa():
         self.dataMotores = [self.VEL_ESQ_FRENTE_RAMPA, self.VEL_DIR_TRAS_RAMPA]
-        self.pubMotores(self.dataMotores)
-    def esquerdaRampa():
+        self.pubDelayMotores(delay)
+    def roboEsqRampa():
         self.dataMotores = [self.VEL_ESQ_TRAS_RAMPA, self.VEL_DIR_FRENTE_RAMPA]
-        self.pubMotores(self.dataMotores)
+        self.pubDelayMotores(delay)

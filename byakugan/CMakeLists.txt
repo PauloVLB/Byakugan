@@ -56,6 +56,7 @@ find_package(catkin REQUIRED COMPONENTS
    BoolStamped.msg
    BotoesMsg.msg
    BoolGarras.msg
+   CtrlMotores.msg
  )
 
 ## Generate services in the 'srv' folder

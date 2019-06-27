@@ -26,8 +26,8 @@ class Garras():
         self.ANG_FINAL_FECHAR_MAO = 90
 
         self.DELAY = 0.2
-        self.BRACO = 1
-        self.MAO = 2
+        self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
+        self.MAO = 2 # diferenciando a publicacao para o braco e a mao
 
         self.angAtualMao = 90
         self.angAtualBraco = 90
@@ -55,43 +55,45 @@ class Garras():
 
     def setPosicao(self, servo ,angInicial, angFinal, delay=None):
         if delay is None:
-            b = self.DELAY
-            
+            delay = self.DELAY
+
         dataGarras = Int32MultiArray()
-        if angInicial > angFinal:
-            # publica em espaços aos poucos do angInicial ao angFinal
-            for i in range(angInicial, angFinal):
-                if servo == self.BRACO: # diferenciando a publicacao para o braco e a mao
-                    dataGarras.data [i, self.angAtualMao] # [braco, mao]
-                    self.angAtualBraco = i
-                elif self.MAO:
-                    dataGarras.data [self.angAtualBraco, i] # [braco, mao
-                    self.angAtualMao = i
-                pubGarras.publish(dataGarras)
-                if not i == angFinal:
-                    time.sleep(delay)
-        else:
+        if angInicial > angFinal: # diminuir angulo
             # publica em espaços aos poucos do angInicial ao angFinal
             for i in range(angInicial, angFinal, -1):
                 if servo == self.BRACO: # diferenciando a publicacao para o braco e a mao
-                    dataGarras.data [i, self.angAtualMao] # [braco, mao]
+                    dataGarras.data = [i, self.angAtualMao] # [braco, mao]
                     self.angAtualBraco = i
-                elif self.MAO:
-                    dataGarras.data [self.angAtualBraco, i] # [braco, mao
+                elif servo == self.MAO:
+                    dataGarras.data = [self.angAtualBraco, i] # [braco, mao
                     self.angAtualMao = i
-                pubGarras.publish(dataGarras)
+
+                self.pubGarras.publish(dataGarras)
                 if not i == angFinal:
-                    time.sleep(delay)
+                    time.sleep(float(delay))
+        else:
+            # publica em espaços aos poucos do angInicial ao angFinal
+            for i in range(angInicial, angFinal):
+                if servo == self.BRACO: # diferenciando a publicacao para o braco e a mao
+                    dataGarras.data = [i, self.angAtualMao] # [braco, mao]
+                    self.angAtualBraco = i
+                elif servo == self.MAO:
+                    dataGarras.data = [self.angAtualBraco, i] # [braco, mao
+                    self.angAtualMao = i
+                self.pubGarras.publish(dataGarras)
+                if not i == angFinal:
+                    time.sleep(float(delay))
 
     def abaixarBraco(self):
         self.setPosicao(self.BRACO, self.ANG_INICIAL_BAIXAR_BRACO, self.ANG_FINAL_BAIXAR_BRACO)
     def subirBraco(self):
         self.setPosicao(self.BRACO, self.ANG_INICIAL_SUBIR_BRACO, self.ANG_FINAL_SUBIR_BRACO)
     def abrirMao(self):
-        self.setPosicao(self.MAO, self.ANG_INICIAL_ABRIR_MAO, self.ANG_FINAL_FECHAR_MAO)
+        self.setPosicao(self.MAO, self.ANG_INICIAL_ABRIR_MAO, self.ANG_FINAL_ABRIR_MAO)
     def fecharMao(self):
         self.setPosicao(self.MAO, self.ANG_INICIAL_FECHAR_MAO, self.ANG_FINAL_FECHAR_MAO)
 
 if __name__ == "__main__":
     garras = Garras()
-    garras.listener()
+    #garras.listener()
+    garras.fecharMao()

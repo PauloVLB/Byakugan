@@ -3,31 +3,30 @@
 import rospy
 import cv2
 import numpy as np
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge
 from std_msgs.msg import Float64MultiArray
 from byakugan.msg import BoolStamped
+
 def circular(img, circles):
 	if (circles is not None):
 		circles = np.uint16(np.around(circles))
-	#	circulo.existe.data = True
+		maiorRaio = 0
+		midColor = 0
 		for i in circles[0, :]:
 			x, y, r = i[0], i[1], i[2]
 
 			center = (x, y)
 			radius = r
 
+			if(radius > maiorRaio):
+				midColor = 255
+				maiorRaio = r
+			else:
+				midColor = 0
+
 			cv2.circle(img, center, 1, (0,100,100), 3) #centro
-			cv2.circle(img, center, radius, (255, 0, 255), 3) #borda
-
-			arrayCoordenadas.data[0] = x
-			arrayCoordenadas.data[1] = y
-			arrayCoordenadas.data[2] = r
-
-			#pub.publish(arrayCoordenadas)
-	#else:
-	#	circulo.existe.data = False
-	#pub2.publish(circulo)
+			cv2.circle(img, center, radius, (255, midColor, 255), 3) #borda
 	return img
 
 def acharCirculos(img):
@@ -45,9 +44,11 @@ def acharCirculos(img):
 
 	return copiaImg
 
-def callback(data):
-	ponte = CvBridge()
-	imgCV = ponte.imgmsg_to_cv2(data,"bgr8")
+def callback(img):
+	np_arr = np.fromstring(img.data, np.uint8)
+	imgCV = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+	imgCV = cv2.flip(imgCV, 2)
 
 	imgCV = acharCirculos(imgCV)
 
@@ -56,14 +57,11 @@ def callback(data):
 	cv2.waitKey(1)
 
 def listenerImg():
-	rospy.init_node('listenerCirculo', anonymous=True)
-	rospy.Subscriber('topico_img', Image, callback)
+	rospy.init_node('showAllCircles', anonymous=True)
+	rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, callback)
 	rospy.spin()
 
 if __name__ == "__main__":
-	#pub = rospy.Publisher('coordenadas_circulos', Float64MultiArray, queue_size=10)
-	#pub2 = rospy.Publisher('tem_circulos', BoolStamped, queue_size=10)
-
 	circulo = BoolStamped()
 	arrayCoordenadas = Float64MultiArray()
 	arrayCoordenadas.data = [0,0,0]

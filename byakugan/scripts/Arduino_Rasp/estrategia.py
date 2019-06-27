@@ -11,18 +11,15 @@ class Estrategia():
 
         # publishers
         self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10)
-        self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
+        #self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
 
         self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
-
-        # motores
-        self.dataMotores = CtrlMotores() # msg
 
         # garras
         self.dataGarras = BoolGarras() # msg
 
     def callbackEstrategia(self, refle, dist):
-
+	
         rate = rospy.Rate(20)
 
         # setando
@@ -47,7 +44,7 @@ class Estrategia():
                self.roboEsq()
            elif esq < 4 and dir < 4: # preto, preto
                self.roboParaTras()
-        '''
+	
         elif self.posicaoRobo == 2:
             # subir rampa
             if esq > 4 and dir > 4: # branco, branco
@@ -74,15 +71,15 @@ class Estrategia():
             # encostar na parede
             paraTras()
             #pubMotoresDelay(200)
-        '''
+       	
         # teste garra
-        self.abaixarMao()
+        #self.abaixarMao()
 
     def roboEmFrente(self, delay=0):
         dataMotores = CtrlMotores()
-        dataMotores.esq = 1
-        dataMotores.dir = 1
-        dataMotores.delay = delay
+        dataMotores.esq.data = 1
+        dataMotores.dir.data = 1
+        dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
     def roboEsq(self, delay=0):
         dataMotores = CtrlMotores()
@@ -143,15 +140,21 @@ class Estrategia():
         self.pubGarras.publish(self.dataGarras)
 
     def loop(self):
-        rospy.init_node('estrategia', anonymous=False)
+        
+	while not rospy.is_shutdown():
+ 	    self.roboEmFrente()
+
         subRefle = message_filters.Subscriber('refletancia', RefletanciaMsg)
         subDistancia = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
-
+	
+	# TESTE MOTORES
+	
         ts = message_filters.TimeSynchronizer([subRefle, subDistancia], 10)
         ts.registerCallback(self.callbackEstrategia)
 
         rospy.spin()
 
 if __name__ == "__main__":
+    rospy.init_node('estrategia', anonymous=False)
     estrategia = Estrategia()
     estrategia.loop()

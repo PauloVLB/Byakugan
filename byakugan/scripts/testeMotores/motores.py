@@ -9,8 +9,6 @@ import time
 class Motores():
     def __init__(self):
 
-        rospy.init_node("motores", anonymous=False)
-
         self.VEL_DIR_FRENTE_RAMPA = 88
         self.VEL_DIR_TRAS_RAMPA = 68
 
@@ -30,6 +28,10 @@ class Motores():
 
     def listener(self):
         rospy.Subscriber("est_motores", CtrlMotores, self.callback)
+
+	while not rospy.is_shutdown():
+		self.roboEmFrente()
+		print 'estou aqui'
         rospy.spin()
     def callback(self, dataMotores):
         esq = dataMotores.esq
@@ -97,5 +99,6 @@ class Motores():
     '''
 
 if __name__ == "__main__":
+    rospy.init_node("motores", anonymous=False)
     motores = Motores()
     motores.listener()

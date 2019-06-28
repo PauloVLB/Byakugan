@@ -9,7 +9,6 @@ from byakugan.msg import BoolGarras
 class Garras():
     def __init__(self):
 
-        rospy.init_node('garras', anonymous=False)
 
         # braco
         self.ANG_INICIAL_BAIXAR_BRACO = 80
@@ -43,17 +42,16 @@ class Garras():
         # braco - True: subir False: abaixar
 
         # testar
-        if dataGarras.mao:
+        if dataGarras.mao.data == 2:
             self.abrirMao()
-        else:
+        elif not dataGarras.mao.data == 1:
             self.fecharMao()
-
-        if dataGarras.braco:
-            self.abrirBraco()
-        else:
+        elif dataGarras.braco.data == 2:
+            self.subirBraco()
+        elif dataGarras.braco.data == 1:
             self.abaixarBraco()
 
-    def setPosicao(self, servo ,angInicial, angFinal, delay=None):
+    def setPosicao(self, servo, angInicial, angFinal, delay=None):
         if delay is None:
             delay = self.DELAY
 
@@ -69,8 +67,10 @@ class Garras():
                     self.angAtualMao = i
 
                 self.pubGarras.publish(dataGarras)
+                #print dataGarras
                 if not i == angFinal:
                     time.sleep(float(delay))
+
         else:
             # publica em espaços aos poucos do angInicial ao angFinal
             for i in range(angInicial, angFinal):
@@ -80,7 +80,9 @@ class Garras():
                 elif servo == self.MAO:
                     dataGarras.data = [self.angAtualBraco, i] # [braco, mao
                     self.angAtualMao = i
+
                 self.pubGarras.publish(dataGarras)
+                #print dataGarras
                 if not i == angFinal:
                     time.sleep(float(delay))
 
@@ -94,6 +96,6 @@ class Garras():
         self.setPosicao(self.MAO, self.ANG_INICIAL_FECHAR_MAO, self.ANG_FINAL_FECHAR_MAO)
 
 if __name__ == "__main__":
+    rospy.init_node('garras', anonymous=False)
     garras = Garras()
-    #garras.listener()
-    garras.fecharMao()
+    garras.listener()

@@ -85,6 +85,9 @@ class Estrategia():
         dataMotores = CtrlMotores()
         self.pubMotores.publish(dataMotores)
 
+
+
+
     def roboEmFrenteRampa(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.rampa.data = True
@@ -126,11 +129,6 @@ class Estrategia():
         self.pubGarras.publish(dataGarras)
 
     def loop(self):
-
-        while True:
-            self.roboEmFrente()
-            self.abrirMao()
-
         '''
         subRefle = message_filters.Subscriber('refletancia', RefletanciaMsg)
         subDistancia = message_filters.Subscriber('distancia', SensoresDistanciaMsg)

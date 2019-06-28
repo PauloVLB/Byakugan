@@ -9,6 +9,8 @@ import time
 class Motores():
     def __init__(self):
 
+
+
         self.VEL_DIR_FRENTE_RAMPA = 88
         self.VEL_DIR_TRAS_RAMPA = 68
 
@@ -28,30 +30,27 @@ class Motores():
 
     def listener(self):
         rospy.Subscriber("est_motores", CtrlMotores, self.callback)
-
-	while not rospy.is_shutdown():
-		self.roboEmFrente()
-		print 'estou aqui'
         rospy.spin()
+
     def callback(self, dataMotores):
-        esq = dataMotores.esq
-        dir = dataMotores.dir
+        esq = dataMotores.esq.data
+        dir = dataMotores.dir.data
         esqFrente = (esq == 1)
         dirFrente = (dir == 1)
 
-        delayPub = dataMotores.delay
+        delayPub = dataMotores.delay.data
 
-        if not dataMotores.rampa:
+        if not dataMotores.rampa.data:
             if esqFrente and dirFrente:
-                self.emFrente(delayPub)
+                self.roboEmFrente(delayPub)
             elif dirFrente:
-                self.esquerda(delayPub)
+                self.roboEsq(delayPub)
             elif esqFrente:
-                self.direita(delayPub)
+                self.roboDir(delayPub)
             elif esq < 0 and dir < 0:
-                self.paraTras(delayPub)
+                self.roboParaTras(delayPub)
             else:
-                self.parar(delayPub)
+                self.roboParar(delayPub)
         '''
         elif esqFrente and dirFrente:
             self.emFrenteRampa(delayPub)
@@ -95,5 +94,4 @@ class Motores():
 if __name__ == "__main__":
     rospy.init_node("motores", anonymous=False)
     motores = Motores()
-    #motores.listener()
-    motores.roboParar(10)
+    motores.listener()

@@ -1,0 +1,4 @@
+<launch>
+	<node name="estrategia" pkg="byakugan" type="estrategia.py"/>
+	<node name="motores" pkg="byakugan" type="motores.py"/>
+</launch>

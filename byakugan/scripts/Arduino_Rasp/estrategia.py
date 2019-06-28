@@ -110,19 +110,19 @@ class Estrategia():
     # pubs garras
     def abaixarBraco(self):
         dataGarras = BoolGarras()
-        dataGarras.braco.data = False
+        dataGarras.braco.data = 1
         self.pubGarras.publish(dataGarras)
     def subirBraco(self):
         dataGarras = BoolGarras()
-        dataGarras.braco.data = True
+        dataGarras.braco.data = 2
         self.pubGarras.publish(dataGarras)
     def abrirMao(self):
         dataGarras = BoolGarras()
-        dataGarras.mao.data = True
+        dataGarras.mao.data = 2
         self.pubGarras.publish(dataGarras)
     def fecharMao(self):
         dataGarras = BoolGarras()
-        dataGarras.mao.data = False
+        dataGarras.mao.data = 1
         self.pubGarras.publish(dataGarras)
 
     def loop(self):

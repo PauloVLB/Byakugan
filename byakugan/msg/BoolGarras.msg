@@ -1,3 +1,3 @@
 Header header
-std_msgs/Bool mao
-std_msgs/Bool braco
+std_msgs/Int8 mao
+std_msgs/Int8 braco

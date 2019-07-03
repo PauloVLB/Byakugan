@@ -32,6 +32,7 @@ class Garras():
         self.angAtualBraco = 90
 
         # publisher
+        self.rate = rospy.Rate(20)
         self.pubGarras = rospy.Publisher('ctrl_garras', Int32MultiArray, queue_size=10)
 
     def listener(self):

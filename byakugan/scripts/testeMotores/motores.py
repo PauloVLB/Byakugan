@@ -26,6 +26,8 @@ class Motores():
         self.dataMotores = Int32MultiArray()
 
         # publisher
+        self.rate = rospy.Rate(20)
+        
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
 
     def listener(self):
@@ -66,6 +68,7 @@ class Motores():
         tAtual = time.time()
         while tAtual - tInicio <= delay: #
             dataMotores.data = [velEsq, velDir]
+
             self.pubMotores.publish(dataMotores)
             tAtual = time.time()
 

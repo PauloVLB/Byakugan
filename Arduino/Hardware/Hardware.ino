@@ -31,20 +31,20 @@ ros::Publisher pubPosicao("posicao", &dataPosicao)
 void motoresCb(const std_msgs::Int32MultiArray &motores){
   robo.acionarMotores(motores.data[0], motores.data[1]);
 }
-ros::Subscriber<std_msgs::Int32MultiArray> subMotores("motores", &motoresCb);
+ros::Subscriber<std_msgs::Int32MultiArray> subMotores("ctrl_motores", &motoresCb);
 
 void garraCb(const std_msgs::Int32MultiArray &garra){
   robo.acionarServoGarra1(garra.data[0]);
   robo.acionarServoGarra2(garra.data[1]);
 }
-ros::Subscriber<std_msgs::Int32MultiArray> subGarra("garra", &garraCb);
+ros::Subscriber<std_msgs::Int32MultiArray> subGarras("ctrl_garras", &garraCb);
 
 
 void setup() {
   nh.getHardware();
   nh.initNode();
   nh.subscribe(subMotores);
-  //nh.subscribe(subGarra);
+  nh.subscribe(subGarras);
 
   //nh.advertise(pubRefletancia);
   //nh.advertise(pubSonares);

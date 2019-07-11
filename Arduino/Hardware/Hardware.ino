@@ -1,11 +1,14 @@
+
 #include <robo_hardware2.h>
 #include <ros.h>
+#include "ByakuganHardware.h"
 #include <std_msgs/Int32MultiArray.h>
 #include <byakugan/RefletanciaMsg.h>
 #include <byakugan/BotoesMsg.h>
 #include <byakugan/SensoresDistanciaMsg.h>
 
-ros::NodeHandle nh;
+
+ros::NodeHandle_<ByakuganHardware> nh;
 
 /*
 byakugan::RefletanciaMsg dataRefletancia;
@@ -38,7 +41,7 @@ ros::Subscriber<std_msgs::Int32MultiArray> subGarra("garra", &garraCb);
 
 
 void setup() {
-  nh.getHardware()->setBaud(115200);
+  nh.getHardware();
   nh.initNode();
   nh.subscribe(subMotores);
   //nh.subscribe(subGarra);

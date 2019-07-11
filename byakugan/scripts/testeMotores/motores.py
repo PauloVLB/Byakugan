@@ -68,12 +68,13 @@ class Motores():
     def pubDelayMotores(self, velEsq, velDir, delay):
         dataMotores = Int32MultiArray()
         tInicio = time.time()
-        tAtual = time.time()
+        tAtual = tInicio
+
         while tAtual - tInicio <= delay: #
             dataMotores.data = [velEsq, velDir]
-
             self.pubMotores.publish(dataMotores)
             tAtual = time.time()
+
 
     # seguir linha
     def roboAcionarMotores(self, esq, dir, delay=0):
@@ -103,4 +104,5 @@ class Motores():
 if __name__ == "__main__":
     rospy.init_node("motores", anonymous=False)
     motores = Motores()
-    motores.listener()
+    motores.roboEmFrente(5)
+    #motores.listener()

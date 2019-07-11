@@ -57,6 +57,14 @@ class Estrategia():
             #sala 3
         '''
 
+    def roboAcionarMotores(self, esq, dir, delay=0):
+        if esq < 100 and dir < 100:
+            dataMotores = CtrlMotores()
+            dataMotores.esq.data = esq
+            dataMotores.dir.data = dir
+            dataMotores.delay.data = delay
+            self.pubMotores.publish(dataMotores)
+
     def roboEmFrente(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.esq.data = 1
@@ -135,9 +143,13 @@ class Estrategia():
 
         ts = message_filters.TimeSynchronizer([subRefle, subDistancia], 10)
         ts.registerCallback(self.callbackEstrategia)
+        '''
+
+        while True:
+            self.roboAcionarMotores(15, -33, 100)
 
         rospy.spin()
-        '''
+
 if __name__ == "__main__":
     rospy.init_node('estrategia', anonymous=False)
     estrategia = Estrategia()

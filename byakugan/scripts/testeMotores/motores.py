@@ -9,8 +9,6 @@ import time
 class Motores():
     def __init__(self):
 
-
-
         self.VEL_DIR_FRENTE_RAMPA = 88
         self.VEL_DIR_TRAS_RAMPA = 68
 
@@ -27,7 +25,7 @@ class Motores():
 
         # publisher
         self.rate = rospy.Rate(20)
-        
+
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
 
     def listener(self):
@@ -40,19 +38,24 @@ class Motores():
         esqFrente = (esq == 1)
         dirFrente = (dir == 1)
 
+        vel_default = (esq < 2 and dir < 2)
+
         delayPub = dataMotores.delay.data
 
-        if not dataMotores.rampa.data:
-            if esqFrente and dirFrente:
-                self.roboEmFrente(delayPub)
-            elif dirFrente:
-                self.roboEsq(delayPub)
-            elif esqFrente:
-                self.roboDir(delayPub)
-            elif esq < 0 and dir < 0:
-                self.roboParaTras(delayPub)
-            else:
-                self.roboParar(delayPub)
+        if vel_default:
+            if not dataMotores.rampa.data:
+                if esqFrente and dirFrente:
+                    self.roboEmFrente(delayPub)
+                elif dirFrente:
+                    self.roboEsq(delayPub)
+                elif esqFrente:
+                    self.roboDir(delayPub)
+                elif esq < 0 and dir < 0:
+                    self.roboParaTras(delayPub)
+                else:
+                    self.roboParar(delayPub)
+        else:
+            self.roboAcionarMotores(esq, dir, delayPub)
         '''
         elif esqFrente and dirFrente:
             self.emFrenteRampa(delayPub)
@@ -73,6 +76,9 @@ class Motores():
             tAtual = time.time()
 
     # seguir linha
+    def roboAcionarMotores(self, esq, dir, delay=0):
+        self.pubDelayMotores(esq, dir, delay)
+
     def roboEmFrente(self, delay=0):
         self.pubDelayMotores(self.VEL_ESQ_FRENTE, self.VEL_DIR_FRENTE, delay)
     def roboDir(self, delay=0):

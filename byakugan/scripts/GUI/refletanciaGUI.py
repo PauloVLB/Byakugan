@@ -29,8 +29,6 @@ def callbackRefle(refle):
                 pt2 = ((i+1)*w/4, h)
                 show = cv2.rectangle(show, pt1, pt2, (0,0,0), -1)
 
-        #show = cv2.putText(show, str(valorSensor),(w/2,h/2), cv2.FONT_HERSHEY_SIMPLEX, 1, cor)
-
         cv2.imshow('cor', show)
         cv2.waitKey(1)
 

@@ -6,7 +6,7 @@ ros::NodeHandle nh;
 
 void motoresCb(const std_msgs::Int32MultiArray &motores){
   robo.acionarMotores(motores.data[0], motores.data[1]);
-  if (motores.data[0] > 0) {
+  if (abs(motores.data[0]) > 0) {
     digitalWrite(LED_BUILTIN, 1);
   } else {
     digitalWrite(LED_BUILTIN, 0);
@@ -27,7 +27,7 @@ void setup() {
   nh.initNode();
 
   pinMode(LED_BUILTIN, OUTPUT);
-  
+
   nh.subscribe(subMotores);
   //nh.subscribe(subGarras);
 

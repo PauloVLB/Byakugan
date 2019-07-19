@@ -24,9 +24,11 @@ class Motores():
         self.dataMotores = Int32MultiArray()
 
         # publisher
+        rospy.init_node("motores", anonymous=False)
         self.rate = rospy.Rate(20)
 
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
+
 
     def listener(self):
         rospy.Subscriber("est_motores", CtrlMotores, self.callback)
@@ -80,27 +82,10 @@ class Motores():
                 iAnterior = iAtual
                 self.pubMotores.publish(dataMotores)
                 print iAtual
-
-            #print tAtual - tInicio
             tAtual = time.time()
 
-        delay = 5
-
-        tInicio = time.time()
-        tAtual = tInicio
-
-        while tAtual - tInicio < delay: #
-
-            dataMotores.data = [0, 0]
-            iAtual = int(tAtual - tInicio)
-            if iAnterior != iAtual:
-                iAnterior = iAtual
-                self.pubMotores.publish(dataMotores)
-                print iAtual
-
-            #print tAtual - tInicio
-            tAtual = time.time()
-
+        dataMotores.data = [0, 0]
+        self.pubMotores.publish(dataMotores)
 
     # seguir linha
     def roboAcionarMotores(self, esq, dir, delay=0):
@@ -128,8 +113,6 @@ class Motores():
     '''
 
 if __name__ == "__main__":
-    rospy.init_node("motores", anonymous=False)
     motores = Motores()
-    while True:
-        motores.roboEmFrente(5)
+    motores.roboEmFrente(5)
     #motores.listener()

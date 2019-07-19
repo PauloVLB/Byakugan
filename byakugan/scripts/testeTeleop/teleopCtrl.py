@@ -1,40 +1,23 @@
 #!/usr/bin/env python
-# -*- conding: utf8 -*-
 
 import rospy
-import curses
-import os
-from . import Motores
+import motores
+from geometry_msgs.msg import Twist
 
-def main(win):
-    win.nodelay(True)
-    key=""
-    win.clear()
-    win.addstr("Detected key:")
-    while not rospy.is_shutdown():
-        try:
-           key = win.getkey()
-           win.clear()
-           win.addstr("Detected key:")
-           keyPressed = str(key)
-           if keyPressed == "KEY_UP":
-               win.addstr("Em frente")
-               #motores.roboEmFrente()
-           elif keyPressed == "KEY_DOWN":
-               win.addstr("Para tras")
-               #motores.roboEmFrente()
-           elif keyPressed == "KEY_LEFT":
-               win.addstr("Para esquerda")
-               #motores.roboEmFrente()
-           elif keyPressed == "KEY_RIGHT":
-               win.addstr("Para direita")
-               #motores.roboEmFrente()
-           if key == os.linesep:
-              break
-        except Exception as e:
-           # No input
-           pass
+def callback(data):
+    if data.linear.x == 2:
+        motores.roboEmFrente(2)
+    elif data.linear.x == -2:
+        motores.roboParaTras(2)
+    elif data.angular.z == 2:
+        motores.roboEsq(2)
+    elif data.angular.z == -2:
+        motores.roboDir(2)
+
+def loop():
+    rospy.Subscriber("/turtle1/cmd_vel", Twist, callback)
+    rospy.spin()
 
 if __name__ == "__main__":
-    # motores = Motores('pubTeleopMotores')
-    curses.wrapper(main)
+    motores = motores.Motores()
+    loop()

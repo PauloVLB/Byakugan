@@ -26,6 +26,8 @@ void setup() {
   nh.getHardware()->setBaud(115200);
   nh.initNode();
 
+  pinMode(LED_BUILTIN, OUTPUT);
+  
   nh.subscribe(subMotores);
   //nh.subscribe(subGarras);
 

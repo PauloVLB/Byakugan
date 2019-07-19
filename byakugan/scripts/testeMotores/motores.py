@@ -70,9 +70,35 @@ class Motores():
         tInicio = time.time()
         tAtual = tInicio
 
-        while tAtual - tInicio <= delay: #
+        iAnterior = -1
+
+        while tAtual - tInicio < delay: #
+
             dataMotores.data = [velEsq, velDir]
-            self.pubMotores.publish(dataMotores)
+            iAtual = int(tAtual - tInicio)
+            if iAnterior != iAtual:
+                iAnterior = iAtual
+                self.pubMotores.publish(dataMotores)
+                print iAtual
+
+            #print tAtual - tInicio
+            tAtual = time.time()
+
+        delay = 5
+
+        tInicio = time.time()
+        tAtual = tInicio
+
+        while tAtual - tInicio < delay: #
+
+            dataMotores.data = [0, 0]
+            iAtual = int(tAtual - tInicio)
+            if iAnterior != iAtual:
+                iAnterior = iAtual
+                self.pubMotores.publish(dataMotores)
+                print iAtual
+
+            #print tAtual - tInicio
             tAtual = time.time()
 
 
@@ -104,5 +130,6 @@ class Motores():
 if __name__ == "__main__":
     rospy.init_node("motores", anonymous=False)
     motores = Motores()
-    motores.roboEmFrente(5)
+    while True:
+        motores.roboEmFrente(5)
     #motores.listener()

@@ -146,7 +146,7 @@ class Estrategia():
         '''
 
         while True:
-            self.roboAcionarMotores(15, -33, 100)
+            self.roboEmFrente()
 
         rospy.spin()
 

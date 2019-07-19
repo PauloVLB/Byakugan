@@ -74,9 +74,11 @@ class Motores():
 
         iAnterior = -1
 
-        while tAtual - tInicio < delay: #
+        dataMotores.data = [velEsq, velDir]
+        if delay == 0:
+                self.pubMotores.publish(dataMotores)
 
-            dataMotores.data = [velEsq, velDir]
+        while tAtual - tInicio < delay: #
             iAtual = int(tAtual - tInicio)
             if iAnterior != iAtual:
                 iAnterior = iAtual
@@ -84,8 +86,9 @@ class Motores():
                 print iAtual
             tAtual = time.time()
 
-        dataMotores.data = [0, 0]
-        self.pubMotores.publish(dataMotores)
+        if delay != 0:
+            dataMotores.data = [0, 0]
+            self.pubMotores.publish(dataMotores)
 
     # seguir linha
     def roboAcionarMotores(self, esq, dir, delay=0):
@@ -114,5 +117,5 @@ class Motores():
 
 if __name__ == "__main__":
     motores = Motores()
-    motores.roboEmFrente(5)
-    #motores.listener()
+    #motores.roboEmFrente(5)
+    motores.listener()

@@ -11,7 +11,13 @@ class Estrategia():
 
         # publishers
         self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10)
+        '''
+        dataMotores = CtrlMotores()
+        self.pubMotores.publish(dataMotores) # estabelece comunicação inicial
+        '''
         self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
+        dataGarras = BoolGarras()
+        self.pubGarras.publish(dataGarras) # estabelece comunicação inicial
 
         self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
 
@@ -127,6 +133,7 @@ class Estrategia():
         dataGarras = BoolGarras()
         dataGarras.braco.data = 2
         self.pubGarras.publish(dataGarras)
+        print 'published'
     def abrirMao(self):
         dataGarras = BoolGarras()
         dataGarras.mao.data = 2
@@ -145,8 +152,8 @@ class Estrategia():
         ts.registerCallback(self.callbackEstrategia)
         '''
 
-        while True:
-            self.roboEmFrente()
+        a = input()
+        self.abaixarBraco()
 
         rospy.spin()
 

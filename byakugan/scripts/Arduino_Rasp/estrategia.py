@@ -10,16 +10,18 @@ class Estrategia():
     def __init__(self):
 
         # publishers
-        self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10)
         '''
+        self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10)
         dataMotores = CtrlMotores()
         self.pubMotores.publish(dataMotores) # estabelece comunicação inicial
         '''
+
         self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
+        '''
         dataGarras = BoolGarras()
         self.pubGarras.publish(dataGarras) # estabelece comunicação inicial
-
-        self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
+        '''
+        #self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
 
     def callbackEstrategia(self, refle, dist):
 
@@ -151,13 +153,14 @@ class Estrategia():
         ts = message_filters.TimeSynchronizer([subRefle, subDistancia], 10)
         ts.registerCallback(self.callbackEstrategia)
         '''
-
+        '''
         a = input()
         self.abaixarBraco()
-
+        '''
         rospy.spin()
 
 if __name__ == "__main__":
     rospy.init_node('estrategia', anonymous=False)
     estrategia = Estrategia()
+    #estrategia.abaixarBraco()
     estrategia.loop()

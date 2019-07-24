@@ -9,7 +9,6 @@ from byakugan.msg import BoolGarras
 class Garras():
     def __init__(self):
 
-
         # braco
         self.ANG_INICIAL_BAIXAR_BRACO = 80
         self.ANG_FINAL_BAIXAR_BRACO = 10
@@ -43,7 +42,7 @@ class Garras():
         # braco - True: subir False: abaixar
 
         print 'backei'
-
+        '''
         # testar
         if dataGarras.mao.data == 2:
             self.abrirMao()
@@ -53,7 +52,7 @@ class Garras():
             self.subirBraco()
         elif dataGarras.braco.data == 1:
             self.abaixarBraco()
-
+        '''
     def setPosicao(self, servo, angInicial, angFinal, delay=None):
         if delay is None:
             delay = self.DELAY

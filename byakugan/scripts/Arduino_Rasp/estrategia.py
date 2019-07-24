@@ -10,22 +10,22 @@ class Estrategia():
     def __init__(self):
 
         # publishers
-        '''
-        self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10)
-        dataMotores = CtrlMotores()
-        self.pubMotores.publish(dataMotores) # estabelece comunicação inicial
-        '''
 
-        self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
+        self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10, latch=True)
+        rospy.loginfo("Setup publisher on est_motores [byakugan/CtrlMotores]")
         '''
+        self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
         dataGarras = BoolGarras()
         self.pubGarras.publish(dataGarras) # estabelece comunicação inicial
         '''
-        #self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
+        self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
 
-    def callbackEstrategia(self, refle, dist):
+        #def callback(self, refle, dist):
+    def callback(self, refle):
 
-        rate = rospy.Rate(20)
+        rospy.loginfo(rospy.get_caller_id() + " - msg received!")
+
+        #rate = rospy.Rate(20)
 
         # setando
         refleMaisEsq = refle.refletancia[0]
@@ -33,21 +33,22 @@ class Estrategia():
         refleDir = refle.refletancia[2]
         refleMaisDir = refle.refletancia[3]
 
-        # falta testar sonares?
+        '''
         sonarFrontal = dist.sensoresDistancia[0]
         sonarDir = dist.sensoresDistancia[1]
         sonarEsq = dist.sensoresDistancia[2]
+        '''
 
         # sala 1 e 2
         if self.posicaoRobo == 1:
            # seguir linha
-           if esq > 4 and dir > 4: # branco, branco
+           if refleEsq >= 4 and refleDir >= 4: # branco, branco
                self.roboEmFrente()
-           elif esq > 4 and dir < 4: # branco, preto
+           elif refleEsq >= 4 and refleDir < 4: # branco, preto
                self.roboDir()
-           elif esq < 4 and dir > 4: # preto, branco
+           elif refleEsq < 4 and refleDir >= 4: # preto, branco
                self.roboEsq()
-           elif esq < 4 and dir < 4: # preto, preto
+           elif refleEsq < 4 and refleDir < 4: # preto, preto
                self.roboParaTras()
         '''
         elif self.posicaoRobo == 2:
@@ -72,6 +73,7 @@ class Estrategia():
             dataMotores.dir.data = dir
             dataMotores.delay.data = delay
             self.pubMotores.publish(dataMotores)
+            rospy.loginfo("[PUBLISHED] roboAcionarMotores!")
 
     def roboEmFrente(self, delay=0):
         dataMotores = CtrlMotores()
@@ -79,27 +81,33 @@ class Estrategia():
         dataMotores.dir.data = 1
         dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboEmFrente!")
     def roboEsq(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.esq.data = -1
         dataMotores.dir.data = 1
         dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboEsq!")
     def roboDir(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.esq.data = 1
         dataMotores.dir.data = -1
         dataMotores.delay.data = delay
+        print 'passei'
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboDir!")
     def roboParaTras(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.esq.data = -1
         dataMotores.dir.data = -1
         dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboParaTras!")
     def roboParar(self, delay=0):
         dataMotores = CtrlMotores()
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboParar!")
 
 
 
@@ -111,6 +119,7 @@ class Estrategia():
         dataMotores.dir.data = 1
         dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboEmFrenteRampa!")
     def roboEsqRampa(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.rampa.data = True
@@ -118,6 +127,7 @@ class Estrategia():
         dataMotores.dir.data = 1
         dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboEsqRampa!")
     def roboDirRampa(self, delay=0):
         dataMotores = CtrlMotores()
         dataMotores.rampa.data = True
@@ -125,25 +135,30 @@ class Estrategia():
         dataMotores.dir.data = -1
         dataMotores.delay.data = delay
         self.pubMotores.publish(dataMotores)
+        rospy.loginfo("[PUBLISHED] roboDirRampa!")
 
     # pubs garras
     def abaixarBraco(self):
         dataGarras = BoolGarras()
         dataGarras.braco.data = 1
         self.pubGarras.publish(dataGarras)
+        rospy.loginfo("[PUBLISHED] abaixarBraco!")
     def subirBraco(self):
         dataGarras = BoolGarras()
         dataGarras.braco.data = 2
         self.pubGarras.publish(dataGarras)
+        rospy.loginfo("[PUBLISHED] subirBraco!")
         print 'published'
     def abrirMao(self):
         dataGarras = BoolGarras()
         dataGarras.mao.data = 2
         self.pubGarras.publish(dataGarras)
+        rospy.loginfo("[PUBLISHED] abrirMao!")
     def fecharMao(self):
         dataGarras = BoolGarras()
         dataGarras.mao.data = 1
         self.pubGarras.publish(dataGarras)
+        rospy.loginfo("[PUBLISHED] fecharMao!")
 
     def loop(self):
         '''
@@ -153,14 +168,13 @@ class Estrategia():
         ts = message_filters.TimeSynchronizer([subRefle, subDistancia], 10)
         ts.registerCallback(self.callbackEstrategia)
         '''
-        '''
-        a = input()
-        self.abaixarBraco()
-        '''
+
+        rospy.Subscriber('refletancia', RefletanciaMsg, self.callback)
+        rospy.loginfo("Setup subscriber on refletancia [RefletanciaMsg]")
+
         rospy.spin()
 
 if __name__ == "__main__":
     rospy.init_node('estrategia', anonymous=False)
     estrategia = Estrategia()
-    #estrategia.abaixarBraco()
     estrategia.loop()

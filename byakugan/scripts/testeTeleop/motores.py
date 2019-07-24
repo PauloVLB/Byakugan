@@ -25,9 +25,9 @@ class Motores():
 
         # publisher
         rospy.init_node("motores", anonymous=False)
-        self.rate = rospy.Rate(20)
 
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
+        rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
 
 
     def listener(self):
@@ -35,12 +35,15 @@ class Motores():
         rospy.spin()
 
     def callback(self, dataMotores):
+
+        rospy.loginfo(rospy.get_caller_id() + " - msg received!")
+
         esq = dataMotores.esq.data
         dir = dataMotores.dir.data
         esqFrente = (esq == 1)
         dirFrente = (dir == 1)
 
-        vel_default = (esq < 2 and dir < 2)
+        vel_default = (esq < 2 and dir < 2) # else - acionarMotores(varEsq, varDir)
 
         delayPub = dataMotores.delay.data
 
@@ -77,18 +80,21 @@ class Motores():
         dataMotores.data = [velEsq, velDir]
         if delay == 0:
                 self.pubMotores.publish(dataMotores)
+                rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
 
         while tAtual - tInicio < delay: #
             iAtual = int(tAtual - tInicio)
             if iAnterior != iAtual:
                 iAnterior = iAtual
                 self.pubMotores.publish(dataMotores)
-                print iAtual
+                rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
+                rospy.loginfo("[PUBLISHING...] time:" + str(iAtual))
             tAtual = time.time()
 
         if delay != 0:
             dataMotores.data = [0, 0]
             self.pubMotores.publish(dataMotores)
+            rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
 
     # seguir linha
     def roboAcionarMotores(self, esq, dir, delay=0):
@@ -117,5 +123,4 @@ class Motores():
 
 if __name__ == "__main__":
     motores = Motores()
-    #motores.roboEmFrente(5)
     motores.listener()

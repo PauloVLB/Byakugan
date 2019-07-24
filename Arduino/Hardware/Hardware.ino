@@ -16,6 +16,7 @@ void motoresCb(const std_msgs::Int32MultiArray &motores){
   int velEsq = motores.data[0];
   int velDir = motores.data[1];
 
+  /*
   if (velEsq > 0) {
     digitalWrite(LED_SERVO1, 1);
   } else {
@@ -27,30 +28,41 @@ void motoresCb(const std_msgs::Int32MultiArray &motores){
   } else {
     digitalWrite(LED_SERVO2, 0);
   }
+  */
 
-  /*
-  if (abs(motores.data[0]) > 0) {
+  if (motores.data[0] > 0) {
     digitalWrite(LED_BUILTIN, 1);
-  } else if abs {
+  } else {
     digitalWrite(LED_BUILTIN, 0);
-  }*/
+  }
 }
 ros::Subscriber<std_msgs::Int32MultiArray> subMotores("ctrl_motores", &motoresCb);
 
-/*
+int lastValue0 = 0;
+int lastValue1 = 0;
 
 void garraCb(const std_msgs::Int32MultiArray &garra){
   //robo.acionarServoGarra1(garra.data[0]);
   //robo.acionarServoGarra2(garra.data[1]);
-  if (abs(garra.data[1]) > 0) {
+
+  if ((garra.data[0] - lastValue0) > 0) {
     digitalWrite(LED_SERVO1, 1);
-  } else if (abs(garra.data[1]) >= 80){
+  } else {
     digitalWrite(LED_SERVO1, 0);
   }
+
+  lastValue0 = garra.data[0];
+
+  if ((garra.data[1] - lastValue1) > 0) {
+    digitalWrite(LED_SERVO2, 1);
+  } else {
+    digitalWrite(LED_SERVO2, 0);
+  }
+
+  lastValue1 = garra.data[1];
 }
 
 ros::Subscriber<std_msgs::Int32MultiArray> subGarras("ctrl_garras", &garraCb);
-*/
 
 
 void setup() {
@@ -58,13 +70,13 @@ void setup() {
   nh.getHardware()->setBaud(115200);
   nh.initNode();
 
-  //pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
-  pinMode(LED_SERVO1, OUTPUT);
-  pinMode(LED_SERVO2, OUTPUT);
+  //pinMode(LED_SERVO1, OUTPUT);
+  //pinMode(LED_SERVO2, OUTPUT);
 
   nh.subscribe(subMotores);
-  //nh.subscribe(subGarras);
+  nh.subscribe(subGarras);
 
   nh.advertise(pubRefletancia);
 

@@ -27,12 +27,16 @@ class Garras():
         self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
         self.MAO = 2 # diferenciando a publicacao para o braco e a mao
 
+        self.cacheBraco = 2 # levantado
+        self.cacheMao = 1 # fechada
+
         self.angAtualMao = 90
         self.angAtualBraco = 90
 
         # publisher
         self.rate = rospy.Rate(20)
         self.pubGarras = rospy.Publisher('ctrl_garras', Int32MultiArray, queue_size=10)
+        rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
 
     def listener(self):
         rospy.Subscriber('est_garras', BoolGarras, self.callback)
@@ -41,18 +45,31 @@ class Garras():
         # mao - True: abrir False: fechar
         # braco - True: subir False: abaixar
 
-        print 'backei'
-        '''
+        rospy.loginfo(rospy.get_caller_id() + " - msg received!")
+
         # testar
-        if dataGarras.mao.data == 2:
+
+        dataMao = dataGarras.mao.data
+        dataBraco = dataGarras.braco.data
+
+        if dataMao == 2 and dataMao != self.cacheMao: # impede publicações desnecessárias
             self.abrirMao()
-        elif not dataGarras.mao.data == 1:
+            self.cacheMao = dataMao
+            rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
+        elif dataMao == 1 and dataMao != self.cacheMao:
             self.fecharMao()
-        elif dataGarras.braco.data == 2:
+            self.cacheMao = dataMao
+            rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
+
+        if dataBraco == 2 and dataBraco != self.cacheBraco:
             self.subirBraco()
-        elif dataGarras.braco.data == 1:
+            self.cacheBraco = dataBraco
+            rospy.loginfo("Note: cacheBraco was changed to " + str(dataBraco))
+        elif dataBraco == 1 and dataBraco != self.cacheBraco:
             self.abaixarBraco()
-        '''
+            self.cacheBraco = dataBraco
+            rospy.loginfo("Note: cacheBraco was changed to " + str(dataBraco))
+
     def setPosicao(self, servo, angInicial, angFinal, delay=None):
         if delay is None:
             delay = self.DELAY
@@ -69,6 +86,7 @@ class Garras():
                     self.angAtualMao = i
 
                 self.pubGarras.publish(dataGarras)
+                rospy.loginfo("[PUBLISHED] ctrl_garras -> " + str(dataGarras.data))
                 #print dataGarras
                 if not i == angFinal:
                     time.sleep(float(delay))
@@ -84,6 +102,7 @@ class Garras():
                     self.angAtualMao = i
 
                 self.pubGarras.publish(dataGarras)
+                rospy.loginfo("[PUBLISHED] ctrl_garras -> " + str(dataGarras.data))
                 #print dataGarras
                 if not i == angFinal:
                     time.sleep(float(delay))

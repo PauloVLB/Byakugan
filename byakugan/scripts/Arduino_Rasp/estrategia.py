@@ -10,14 +10,12 @@ class Estrategia():
     def __init__(self):
 
         # publishers
-
         self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10, latch=True)
         rospy.loginfo("Setup publisher on est_motores [byakugan/CtrlMotores]")
-        '''
-        self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10)
-        dataGarras = BoolGarras()
-        self.pubGarras.publish(dataGarras) # estabelece comunicação inicial
-        '''
+
+        self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10, latch=True)
+        rospy.loginfo("Setup publisher on est_garras [byakugan/BoolGarras]")
+
         self.posicaoRobo = 1 # 1 == SALA 1 E 2 // 2 == RAMPA // 3 == SALA
 
         #def callback(self, refle, dist):

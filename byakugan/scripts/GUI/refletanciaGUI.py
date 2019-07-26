@@ -11,7 +11,7 @@ def callbackRefle(refle):
     if(len(refle.refletancia) > 0):
         valorSensor = refle.refletancia
         rospy.loginfo('refletancia: ' + str(valorSensor))
-        show = cv2.imread('/home/paulo/IFRN/branco.png')
+        show = cv2.imread('/home/paulo/IFRN/branco.png') ##fazer generico
         show = cv2.resize(show, (600, 150))
         w = show.shape[1]
         h = show.shape[0]

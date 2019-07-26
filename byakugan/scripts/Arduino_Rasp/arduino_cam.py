@@ -19,16 +19,34 @@ def map(x, in_min, in_max, out_min, out_max):
 
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 def arduinoCamCb(refle, dist, circulo, botoes, coordenadas):
-
+    global lock
+    lock.acquire()
     maisEsq = refle.refletancia[0]
     esq = refle.refletancia[1]
-    
     dir = refle.refletancia[2]
     maisDir = refle.refletancia[3]
 
     distFrontal =  dist.sensoresDistancia[0]
     distEsq = dist.sensoresDistancia[1]
     distDir = dist.sensoresDistancia[2]
+    lock.release()
+
+def get():
+    global lock
+    lock.acquire()
+        #copia para variaveis locais
+    lock.release()
+    return
+
+
+def lerSonar1():
+    global lock
+    lock.acquire()
+    vSonar =  distFrontal
+    lock.release()
+    return vSonar
+
+while(master.lerSonar1() > 10)
 
     if botoes.botao1.data:
         print 'botao 1 pressionado'
@@ -68,6 +86,11 @@ def arduino_cam():
     ts.registerCallback(arduinoCamCb)
 
     rospy.spin()
+    #while
+    #rospy.spinOnce()
+    ##copia valores dos sensores
+    ##estrategia
+    ##copia valores para os atuadores
 
 if __name__ == "__main__":
     try:

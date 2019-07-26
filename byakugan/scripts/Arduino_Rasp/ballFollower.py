@@ -16,11 +16,16 @@ def map(x, in_min, in_max, out_min, out_max):
 
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
+def acionarMotores(esq, dir):
+    dataMotores.data = [esq, dir]
+
+    pubMotores.publish(dataMotores)
+
 def callback(botoes, circulo, coordenadas):
     if botoes.botao2.data:
-        dataMotores.data = [25, -25]
-        
-        pubMotores.publish(dataMotores)
+        acionarMotores(25, -25)
+    else:
+        acionarMotores(0, 0)
 
 def ballFollower():
     rospy.init_node('ballFollower', anonymous=True)

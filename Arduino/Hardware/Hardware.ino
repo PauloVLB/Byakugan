@@ -1,4 +1,4 @@
-#include <robo_hardware2.h>
+  #include <robo_hardware2.h>
 #include <ros.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <byakugan/RefletanciaMsg.h>
@@ -7,16 +7,16 @@ byakugan::RefletanciaMsg dataRefletancia;
 ros::Publisher pubRefletancia("refletancia", &dataRefletancia);
 
 ros::NodeHandle nh;
-
+/*
 #define LED_SERVO1 2
 #define LED_SERVO2 3
-
+*/
 void motoresCb(const std_msgs::Int32MultiArray &motores){
-  //robo.acionarMotores(motores.data[0], motores.data[1]);
+  robo.acionarMotores(motores.data[0], motores.data[1]);
+  /*
   int velEsq = motores.data[0];
   int velDir = motores.data[1];
 
-  /*
   if (velEsq > 0) {
     digitalWrite(LED_SERVO1, 1);
   } else {
@@ -28,35 +28,37 @@ void motoresCb(const std_msgs::Int32MultiArray &motores){
   } else {
     digitalWrite(LED_SERVO2, 0);
   }
-  */
+
 
   if (motores.data[0] > 0) {
     digitalWrite(LED_BUILTIN, 1);
   } else {
     digitalWrite(LED_BUILTIN, 0);
   }
+  */
 }
 ros::Subscriber<std_msgs::Int32MultiArray> subMotores("ctrl_motores", &motoresCb);
+
 
 int lastValue0 = 0;
 int lastValue1 = 0;
 
 void garraCb(const std_msgs::Int32MultiArray &garra){
-  //robo.acionarServoGarra1(garra.data[0]);
-  //robo.acionarServoGarra2(garra.data[1]);
+  robo.acionarServoGarra1(garra.data[0]);
+  robo.acionarServoGarra2(garra.data[1]);
 
   if ((garra.data[0] - lastValue0) > 0) {
-    digitalWrite(LED_SERVO1, 1);
+    robo.ligarLed(1);
   } else {
-    digitalWrite(LED_SERVO1, 0);
+    robo.desligarLed(1);
   }
 
   lastValue0 = garra.data[0];
 
   if ((garra.data[1] - lastValue1) > 0) {
-    digitalWrite(LED_SERVO2, 1);
+    robo.ligarLed(2);
   } else {
-    digitalWrite(LED_SERVO2, 0);
+    robo.desligarLed(2);
   }
 
   lastValue1 = garra.data[1];
@@ -70,20 +72,31 @@ void setup() {
   nh.getHardware()->setBaud(115200);
   nh.initNode();
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  //pinMode(LED_BUILTIN, OUTPUT);
 
   //pinMode(LED_SERVO1, OUTPUT);
   //pinMode(LED_SERVO2, OUTPUT);
 
   nh.subscribe(subMotores);
-  nh.subscribe(subGarras);
+  //nh.subscribe(subGarras);
 
   nh.advertise(pubRefletancia);
 
-  //robo.configurar(true);
+
+
+  robo.configurar(true);
   //robo.habilitaTCS34();
 }
 
 void loop() {
+  
+  dataRefletancia.refletancia[1] = robo.lerSensorLinhaEsqSemRuido();
+  dataRefletancia.refletancia[0] = robo.lerSensorLinhaMaisEsqSemRuido();
+  dataRefletancia.refletancia[2] = robo.lerSensorLinhaDirSemRuido();
+  dataRefletancia.refletancia[3] = robo.lerSensorLinhaMaisDirSemRuido();
+
+  pubRefletancia.publish(&dataRefletancia);
+
   nh.spinOnce();
+
 }

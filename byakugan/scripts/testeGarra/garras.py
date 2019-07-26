@@ -23,7 +23,7 @@ class Garras():
         self.ANG_INICIAL_FECHAR_MAO = 0
         self.ANG_FINAL_FECHAR_MAO = 90
 
-        self.DELAY = 0.05
+        self.DELAY = 0.005
         self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
         self.MAO = 2 # diferenciando a publicacao para o braco e a mao
 

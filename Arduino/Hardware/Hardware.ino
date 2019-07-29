@@ -1,10 +1,19 @@
-  #include <robo_hardware2.h>
+#include <robo_hardware2.h>
 #include <ros.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <byakugan/RefletanciaMsg.h>
+#include <byakugan/BotoesMsg.h>
+#include <byakugan/SensoresDistanciaMsg.h>
 
 byakugan::RefletanciaMsg dataRefletancia;
 ros::Publisher pubRefletancia("refletancia", &dataRefletancia);
+
+byakugan::BotoesMsg dataBtns;
+ros::Publisher pubBtns("botoes", &dataBtns);
+
+byakugan::SensoresDistanciaMsg dataDist;
+ros::Publisher pubDist("distancia", &dataDist);
+
 
 ros::NodeHandle nh;
 /*
@@ -81,9 +90,9 @@ void setup() {
   //nh.subscribe(subGarras);
 
   nh.advertise(pubRefletancia);
-
-
-
+  nh.advertise(pubDist);
+  nh.advertise(pubBtns);
+  
   robo.configurar(true);
   //robo.habilitaTCS34();
 }
@@ -95,7 +104,17 @@ void loop() {
   dataRefletancia.refletancia[2] = robo.lerSensorLinhaDirSemRuido();
   dataRefletancia.refletancia[3] = robo.lerSensorLinhaMaisDirSemRuido();
 
+  dataBtns.botao1.data = robo.botao1Pressionado();
+  dataBtns.botao2.data = robo.botao2Pressionado();
+  dataBtns.botao3.data = robo.botao3Pressionado();
+
+  dataDist.sensoresDistancia[0] = robo.lerSensorSonarFrontal();
+  dataDist.sensoresDistancia[1] = robo.lerSensorSonarDir();
+  dataDist.sensoresDistancia[2] = robo.lerSensorSonarEsq();
+
   pubRefletancia.publish(&dataRefletancia);
+  pubDist.publish(&dataDist);
+  pubBtns.publish(&dataBtns);
 
   nh.spinOnce();
 

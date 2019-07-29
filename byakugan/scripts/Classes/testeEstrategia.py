@@ -16,7 +16,7 @@ if __name__ == "__main__":
     try:
         rospy.init_node('testeEstrategia', anonymous=True)
         sl = SensorsListener()
-        threading.Thread(target=showValue).start()
+        #threading.Thread(target=showValue).start()
         sl.register()
 
     except rospy.ROSInterruptException:

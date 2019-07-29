@@ -24,21 +24,26 @@ class Motores():
         self.dataMotores = Int32MultiArray()
 
         # publisher
-        self.rate = rospy.Rate(20)
+        rospy.init_node("motores", anonymous=False)
 
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
+        rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
+
 
     def listener(self):
         rospy.Subscriber("est_motores", CtrlMotores, self.callback)
         rospy.spin()
 
     def callback(self, dataMotores):
+
+        rospy.loginfo(rospy.get_caller_id() + " - msg received!")
+
         esq = dataMotores.esq.data
         dir = dataMotores.dir.data
         esqFrente = (esq == 1)
         dirFrente = (dir == 1)
 
-        vel_default = (esq < 2 and dir < 2)
+        vel_default = (esq < 2 and dir < 2) # else - acionarMotores(varEsq, varDir)
 
         delayPub = dataMotores.delay.data
 
@@ -70,11 +75,26 @@ class Motores():
         tInicio = time.time()
         tAtual = tInicio
 
-        while tAtual - tInicio <= delay: #
-            dataMotores.data = [velEsq, velDir]
-            self.pubMotores.publish(dataMotores)
+        iAnterior = -1
+
+        dataMotores.data = [velEsq, velDir]
+        if delay == 0:
+                self.pubMotores.publish(dataMotores)
+                rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
+
+        while tAtual - tInicio < delay: #
+            iAtual = int(tAtual - tInicio)
+            if iAnterior != iAtual:
+                iAnterior = iAtual
+                self.pubMotores.publish(dataMotores)
+                rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
+                rospy.loginfo("[PUBLISHING...] time:" + str(iAtual))
             tAtual = time.time()
 
+        if delay != 0:
+            dataMotores.data = [0, 0]
+            self.pubMotores.publish(dataMotores)
+            rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
 
     # seguir linha
     def roboAcionarMotores(self, esq, dir, delay=0):
@@ -102,7 +122,5 @@ class Motores():
     '''
 
 if __name__ == "__main__":
-    rospy.init_node("motores", anonymous=False)
     motores = Motores()
-    motores.roboEmFrente(5)
-    #motores.listener()
+    motores.listener()

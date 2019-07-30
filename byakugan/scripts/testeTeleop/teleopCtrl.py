@@ -6,13 +6,13 @@ from geometry_msgs.msg import Twist
 
 def callback(data):
     if data.linear.x == 2:
-        motores.roboEmFrente(2)
+        motores.roboEmFrente(.1)
     elif data.linear.x == -2:
-        motores.roboParaTras(2)
+        motores.roboParaTras(.1)
     elif data.angular.z == 2:
-        motores.roboEsq(2)
+        motores.roboEsq(.1)
     elif data.angular.z == -2:
-        motores.roboDir(2)
+        motores.roboDir(.1)
 
 def loop():
     rospy.Subscriber("/turtle1/cmd_vel", Twist, callback)

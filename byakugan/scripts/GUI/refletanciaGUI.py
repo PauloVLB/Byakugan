@@ -7,15 +7,16 @@ from std_msgs.msg import Float64MultiArray
 from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg
 
 def callbackRefle(refle):
-
     if(len(refle.refletancia) > 0):
         valorSensor = refle.refletancia
         rospy.loginfo('refletancia: ' + str(valorSensor))
-        show = cv2.imread('/home/paulo/IFRN/branco.png') ##fazer generico
-        show = cv2.resize(show, (600, 150))
+
         w = show.shape[1]
         h = show.shape[0]
         cor = (0,0,0)
+
+        show = cv2.rectangle(show, (w,h), (0,0), (255,255,255),-1) ##fazer generico
+        show = cv2.resize(show, (600, 150))
 
         for i in range(1, 4):
             pt1 = (i*w/4, 0)

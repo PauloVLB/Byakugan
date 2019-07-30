@@ -5,7 +5,7 @@ import threading
 from std_msgs.msg import Int32MultiArray
 from SensorsListener import SensorsListener
 from Sensores import Sensores
-import motores
+#import motores
 
 
 def maisEsqBranco():
@@ -34,6 +34,7 @@ def p_p_p_b():
 
 def b_p_p_p():
     return maisEsqBranco() and not esqBranco() and not dirBranco() and not maisDirBranco()
+
 def b_b_p_p():
     return maisEsqBranco() and esqBranco() and not dirBranco() and not maisDirBranco()
 
@@ -64,45 +65,40 @@ def b_p_b_b():
 def b_b_p_b():
     return maisEsqBranco() and esqBranco() and not dirBranco() and maisDirBranco()
 
+def acionarMotores(esq, dir):
+    dataMotores.data = [esq, dir]
+    pubMotores.publish(dataMotores)
+    rate.sleep()
+
 def showValue():
     while not rospy.is_shutdown():
         if b_b_b_b():
-            dataMotores.data = [45, 45]
-            pubMotores.publish(dataMotores)
-            #motores.roboEmFrente()
+            acionarMotores(45, 45)
         elif b_p_b_b():
-            dataMotores.data = [-45, 45]
-            pubMotores.publish(dataMotores)
-            #motores.roboEsq()
+            acionarMotores(-45, 45)
         elif b_b_p_b():
-            dataMotores.data = [45, -45]
-            pubMotores.publish(dataMotores)
-            #motores.roboDir()
+            acionarMotores(45, -45)
+
         elif p_p_b_b() or p_p_p_b():
             while not esqBranco():
-                dataMotores.data = [45, 45]
-                pubMotores.publish(dataMotores)
-            '''
-            while True:
-                dataMotores.data = [0, 0]
-                pubMotores.publish(dataMotores)
-            '''
+                acionarMotores(45, 45)
             while esqBranco():
-                dataMotores.data = [45, -45]
-                pubMotores.publish(dataMotores)
+                acionarMotores(-45, 45)
             while not esqBranco():
-                dataMotores.data = [45, -45]
-                pubMotores.publish(dataMotores)
+                acionarMotores(-45, 45)
+            while not dirBranco():
+                acionarMotores(45, -45)
+
+
         elif b_b_p_p() or b_p_p_p():
             while not dirBranco():
-                dataMotores.data = [45, 45]
-                pubMotores.publish(dataMotores)
+                acionarMotores(45, 45)
             while dirBranco():
-                dataMotores.data = [-45, 45]
-                pubMotores.publish(dataMotores)
+                acionarMotores(45, -45)
             while not dirBranco():
-                dataMotores.data = [-45, 45]
-                pubMotores.publish(dataMotores)
+                acionarMotores(45, -45)
+            while not esqBranco():
+                acionarMotores(-45, 45)
 
         rate.sleep()
 
@@ -110,9 +106,8 @@ if __name__ == "__main__":
     try:
         rospy.init_node('testeEstrategia', anonymous=True)
         dataMotores = Int32MultiArray()
-        rate = rospy.Rate(30)
+        rate = rospy.Rate(230)
         pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
-        #motores = motores.Motores()
         sl = SensorsListener()
         threading.Thread(target=showValue).start()
         sl.register()

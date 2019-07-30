@@ -4,6 +4,7 @@ import rospy
 import threading
 from std_msgs.msg import Int32MultiArray
 from SensorsListener import SensorsListener
+import refletancia
 from Sensores import Sensores
 #import motores
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         rate = rospy.Rate(230)
         pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
         sl = SensorsListener()
-        refle = Refletancia(sl)
+        refle = refletancia.Refletancia(sl)
         threading.Thread(target=showValue).start()
         sl.register()
 

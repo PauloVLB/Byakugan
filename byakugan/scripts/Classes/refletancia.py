@@ -4,7 +4,7 @@ import rospy
 from SensorsListener import SensorsListener
 #import motores
 
-class Sensores():
+class Refletancia():
     def __init__(self, sl):
         self.sl = sl
 

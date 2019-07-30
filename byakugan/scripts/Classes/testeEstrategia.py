@@ -2,9 +2,10 @@
 
 import rospy
 import threading
+from std_msgs.msg import Int32MultiArray
 from SensorsListener import SensorsListener
 from Sensores import Sensores
-#import motores
+import motores
 
 
 def maisEsqBranco():
@@ -65,10 +66,53 @@ def b_b_p_b():
 
 def showValue():
     while not rospy.is_shutdown():
-        pass
+        if b_b_b_b():
+            dataMotores.data = [45, 45]
+            pubMotores.publish(dataMotores)
+            #motores.roboEmFrente()
+        elif b_p_b_b():
+            dataMotores.data = [-45, 45]
+            pubMotores.publish(dataMotores)
+            #motores.roboEsq()
+        elif b_b_p_b():
+            dataMotores.data = [45, -45]
+            pubMotores.publish(dataMotores)
+            #motores.roboDir()
+        elif p_p_b_b() or p_p_p_b():
+            while not esqBranco():
+                dataMotores.data = [45, 45]
+                pubMotores.publish(dataMotores)
+            '''
+            while True:
+                dataMotores.data = [0, 0]
+                pubMotores.publish(dataMotores)
+            '''
+            while esqBranco():
+                dataMotores.data = [45, -45]
+                pubMotores.publish(dataMotores)
+            while not esqBranco():
+                dataMotores.data = [45, -45]
+                pubMotores.publish(dataMotores)
+        elif b_b_p_p() or b_p_p_p():
+            while not dirBranco():
+                dataMotores.data = [45, 45]
+                pubMotores.publish(dataMotores)
+            while dirBranco():
+                dataMotores.data = [-45, 45]
+                pubMotores.publish(dataMotores)
+            while not dirBranco():
+                dataMotores.data = [-45, 45]
+                pubMotores.publish(dataMotores)
+
+        rate.sleep()
+
 if __name__ == "__main__":
     try:
         rospy.init_node('testeEstrategia', anonymous=True)
+        dataMotores = Int32MultiArray()
+        rate = rospy.Rate(30)
+        pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
+        #motores = motores.Motores()
         sl = SensorsListener()
         threading.Thread(target=showValue).start()
         sl.register()

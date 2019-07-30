@@ -18,5 +18,5 @@ class SensorsListener(Sensores):
         self.ts.registerCallback(self.sensorsCallback)
         rospy.spin()
     def sensorsCallback(self, refle, dist, btns):
-        rospy.loginfo("oi")
+        #rospy.loginfo("oi")
         self.setValues(refle, dist, btns)

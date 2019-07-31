@@ -48,12 +48,12 @@ def showValue():
 if __name__ == "__main__":
     try:
         rospy.init_node('testeEstrategia', anonymous=True)
+        dataMotores = Int32MultiArray()
         rate = rospy.Rate(230)
         pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
         sl = SensorsListener()
         refle = refletancia.Refletancia(sl)
         threading.Thread(target=showValue).start()
         sl.register()
-
     except rospy.ROSInterruptException:
         pass

@@ -6,63 +6,63 @@ from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg, BotoesMsg
 
 class Sensores:
     '''
-    __refletancia
-    __distancia
-    __botoes
-    __lock
+    ___refletancia
+    ___distancia
+    ___botores
+    ___lock
     '''
     def __init__(self):
-        self._lock = threading.Lock()
+        self.__lock = threading.Lock()
 
-        self._lock.acquire()
+        self.__lock.acquire()
         try:
-            self._refletancia = RefletanciaMsg()
-            self._distancia = SensoresDistanciaMsg()
-            self._botoes = BotoesMsg()
+            self.__refletancia = RefletanciaMsg()
+            self.__distancia = SensoresDistanciaMsg()
+            self.__botores = BotoesMsg()
         finally:
-            self._lock.release()
+            self.__lock.release()
 
     def setValues(self, refle, dist, btns):
-        self._lock.acquire()
+        self.__lock.acquire()
         try:
-            self._refletancia = refle
-            self._distancia = dist
-            self._botoes = btns
+            self.__refletancia = refle
+            self.__distancia = dist
+            self.__botores = btns
         finally:
-            self._lock.release()
+            self.__lock.release()
 
     def getRefle(self, n):
-        self._lock.acquire() #pega o lock
+        self.__lock.acquire() #pega o lock
         try:
-            return self._refletancia.refletancia[n] #le a variavel
+            return self.__refletancia.refletancia[n] #le a variavel
         finally:
-            self._lock.release() #solta o lock
+            self.__lock.release() #solta o lock
 
     def getDist(self, n):
-        self._lock.acquire() #pega o lock
+        self.__lock.acquire() #pega o lock
         try:
-            return self._distancia.sensoresDistancia[n] #le a variavel
+            return self.__distancia.sensoresDistancia[n] #le a variavel
         finally:
-            self._lock.release() #solta o lock
+            self.__lock.release() #solta o lock
 
 
     def getBtn1(self):
-        self._lock.acquire()
+        self.__lock.acquire()
         try:
-            return self._botoes.botao1.data
+            return self.__botoes.botao1.data
         finally:
-            self._lock.release()
+            self.__lock.release()
 
     def getBtn2(self):
-        self._lock.acquire()
+        self.__lock.acquire()
         try:
-            return self._botoes.botao2.data
+            return self.__botoes.botao2.data
         finally:
-            self._lock.release()
+            self.__lock.release()
 
     def getBtn3(self):
-        self._lock.acquire()
+        self.__lock.acquire()
         try:
-            return self._botoes.botao3.data
+            return self.__botoes.botao3.data
         finally:
-            self._lock.release()
+            self.__lock.release()

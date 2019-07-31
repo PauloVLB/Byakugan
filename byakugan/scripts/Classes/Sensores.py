@@ -8,7 +8,7 @@ class Sensores:
     '''
     ___refletancia
     ___distancia
-    ___botores
+    ___botoes
     ___lock
     '''
     def __init__(self):
@@ -18,7 +18,7 @@ class Sensores:
         try:
             self.__refletancia = RefletanciaMsg()
             self.__distancia = SensoresDistanciaMsg()
-            self.__botores = BotoesMsg()
+            self.__botoes = BotoesMsg()
         finally:
             self.__lock.release()
 
@@ -27,7 +27,7 @@ class Sensores:
         try:
             self.__refletancia = refle
             self.__distancia = dist
-            self.__botores = btns
+            self.__botoes = btns
         finally:
             self.__lock.release()
 

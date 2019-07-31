@@ -3,6 +3,7 @@
 import rospy
 import cv2
 import message_filters
+import numpy as np
 from std_msgs.msg import Float64MultiArray
 from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg
 
@@ -11,7 +12,9 @@ def callbackDistancia(data):
         valorSensor = data.sensoresDistancia[0]
         rospy.loginfo('sonar: ' + str(valorSensor))
 
-        show = cv2.imread('/home/paulo/IFRN/branco.png')
+        show = np.zeros((500,500,3), np.uint8)
+        #show = cv2.resize(show, (500, 500))
+
         w = show.shape[1]
         h = show.shape[0]
 
@@ -21,7 +24,7 @@ def callbackDistancia(data):
         show = cv2.circle(show, centro, int(raio), (0,255,0), -1)
 
         show = cv2.putText(show, str(valorSensor),(w/2,h/2), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0))
-        show = cv2.resize(show, (500, 500))
+
         cv2.imshow('distancia', show)
         cv2.waitKey(1)
 

@@ -2,6 +2,7 @@
 
 import rospy
 import cv2
+import numpy as np
 import message_filters
 from std_msgs.msg import Float64MultiArray
 from byakugan.msg import SensoresDistanciaMsg, RefletanciaMsg
@@ -11,12 +12,14 @@ def callbackRefle(refle):
         valorSensor = refle.refletancia
         rospy.loginfo('refletancia: ' + str(valorSensor))
 
+        show = np.zeros((150,600,3), np.uint8)
+        #show = cv2.resize(show, (600, 150))
+
         w = show.shape[1]
         h = show.shape[0]
         cor = (0,0,0)
 
-        show = cv2.rectangle(show, (w,h), (0,0), (255,255,255),-1) ##fazer generico
-        show = cv2.resize(show, (600, 150))
+        show = cv2.rectangle(show, (w,h), (0,0), (255,255,255),-1)
 
         for i in range(1, 4):
             pt1 = (i*w/4, 0)

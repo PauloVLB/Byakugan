@@ -1,4 +1,0 @@
-<launch>
-	<node name="talkerCamera" pkg="byakugan" type="talkerImg.py"/>
-	<node name="listenerCirculos" pkg="byakugan" type="listenerCirculos.py"/>
-</launch>

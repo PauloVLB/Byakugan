@@ -8,4 +8,7 @@
 		<param name="baud" value="$(arg baudArduino)"/>
 		<param name="port" value="$(arg portArduino)"/>
 	</node>
+	
+	<node pkg="byakugan" type="testeEstrategia.py" name="estrategia"/>
+		
 </launch>

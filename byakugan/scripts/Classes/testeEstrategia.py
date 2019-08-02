@@ -13,8 +13,15 @@ def acionarMotores(esq, dir):
     pubMotores.publish(dataMotores)
     rate.sleep()
 
-def showValue():
+def loop():
+    #btn2 = False
     while not rospy.is_shutdown():
+        '''
+        while not btn2: 
+            acionarMotores(0,0)
+            btn2 = sl.getBtn2()
+        btn2 = True 
+        '''
         if refle.b_b_b_b():
             acionarMotores(45, 45)
         elif refle.b_p_b_b():
@@ -44,6 +51,11 @@ def showValue():
                 acionarMotores(-45, 45)
 
         rate.sleep()
+    
+    #rospy.loginfo("acabou")
+    
+    for i in range(2):
+        acionarMotores(0,0)
 
 if __name__ == "__main__":
     try:
@@ -53,7 +65,7 @@ if __name__ == "__main__":
         pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
         sl = SensorsListener()
         refle = refletancia.Refletancia(sl)
-        threading.Thread(target=showValue).start()
+        threading.Thread(target=loop).start()
         sl.register()
     except rospy.ROSInterruptException:
         pass

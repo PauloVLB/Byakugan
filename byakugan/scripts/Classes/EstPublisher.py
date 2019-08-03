@@ -7,115 +7,114 @@ class EstPublisher():
 
         self.rate = rospy.Rate(230)
 
+        self.dataMotores = CtrlMotores()
+        self.dataGarras = BoolGarras()
+
         self.pubMotores = rospy.Publisher('est_motores', CtrlMotores, queue_size=10, latch=True)
         rospy.loginfo("Setup publisher on est_motores [byakugan/CtrlMotores]")
 
         self.pubGarras = rospy.Publisher('est_garras', BoolGarras, queue_size=10, latch=True)
         rospy.loginfo("Setup publisher on est_garras [byakugan/BoolGarras]")
 
+    def setDataMotores(self, esq, dir, delay, rampa=False):
+        self.dataMotores.esq.data = esq
+        self.dataMotores.dir.data = dir
+        self.dataMotores.rampa.data = rampa
+        self.dataMotores.delay.data = delay
+        
+    def setDataGarras(self, mao, braco):
+        self.dataGarras.mao.data = mao
+        self.dataGarras.braco.data = braco
+
     def roboAcionarMotores(self, esq, dir, delay=0):
         if esq < 100 and dir < 100:
-            dataMotores = CtrlMotores()
-            dataMotores.esq.data = esq
-            dataMotores.dir.data = dir
-            dataMotores.delay.data = delay
+            self.setDataMotores(esq, dir, delay)
             self.pubMotores.publish(dataMotores)
-            rospy.loginfo("[PUBLISHED] roboAcionarMotores!")
+            #rospy.loginfo("[PUBLISHED] roboAcionarMotores!")
             self.rate.sleep()
 
     def roboEmFrente(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.esq.data = 1
-        dataMotores.dir.data = 1
-        dataMotores.delay.data = delay
+        self.setDataMotores(1, 1, delay)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboEmFrente!")
+        #rospy.loginfo("[PUBLISHED] roboEmFrente!")
         self.rate.sleep()
+
     def roboEsq(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.esq.data = -1
-        dataMotores.dir.data = 1
-        dataMotores.delay.data = delay
+        self.setDataMotores(-1, 1, delay)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboEsq!")
+        #rospy.loginfo("[PUBLISHED] roboEsq!")
         self.rate.sleep()
+    
     def roboDir(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.esq.data = 1
-        dataMotores.dir.data = -1
-        dataMotores.delay.data = delay
-        print 'passei'
+        self.setDataMotores(1, -1, delay)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboDir!")
+        #rospy.loginfo("[PUBLISHED] roboDir!")
         self.rate.sleep()
+
     def roboParaTras(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.esq.data = -1
-        dataMotores.dir.data = -1
-        dataMotores.delay.data = delay
+        self.setDataMotores(-1, -1, delay)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboParaTras!")
+        #rospy.loginfo("[PUBLISHED] roboParaTras!")
         self.rate.sleep()
+
     def roboParar(self, delay=0):
-        dataMotores = CtrlMotores()
+        self.setDataMotores(0, 0, delay)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboParar!")
+        #rospy.loginfo("[PUBLISHED] roboParar!")
         self.rate.sleep()
 
 
 
 
     def roboEmFrenteRampa(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.rampa.data = True
-        dataMotores.esq.data = 1
-        dataMotores.dir.data = 1
-        dataMotores.delay.data = delay
+        rampa = True
+        self.setDataMotores(1, 1, delay, rampa)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboEmFrenteRampa!")
+        #rospy.loginfo("[PUBLISHED] roboEmFrenteRampa!")
         self.rate.sleep()
+
     def roboEsqRampa(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.rampa.data = True
-        dataMotores.esq.data = -1
-        dataMotores.dir.data = 1
-        dataMotores.delay.data = delay
-        self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboEsqRampa!")
+        rampa = True
+        self.setDataMotores(-1, 1, delay, rampa)
+        #rospy.loginfo("[PUBLISHED] roboEsqRampa!")
         self.rate.sleep()
+
     def roboDirRampa(self, delay=0):
-        dataMotores = CtrlMotores()
-        dataMotores.rampa.data = True
-        dataMotores.esq.data = 1
-        dataMotores.dir.data = -1
-        dataMotores.delay.data = delay
+        rampa = True
+        self.setDataMotores(1, -1, delay, rampa)
         self.pubMotores.publish(dataMotores)
-        rospy.loginfo("[PUBLISHED] roboDirRampa!")
+        #rospy.loginfo("[PUBLISHED] roboDirRampa!")
         self.rate.sleep()
 
     # pubs garras
     def abaixarBraco(self):
-        dataGarras = BoolGarras()
-        dataGarras.braco.data = 1
+        mao = 0
+        braco = 1
+        self.setDataGarras(mao, braco)
         self.pubGarras.publish(dataGarras)
-        rospy.loginfo("[PUBLISHED] abaixarBraco!")
+        #rospy.loginfo("[PUBLISHED] abaixarBraco!")
         self.rate.sleep()
+
     def subirBraco(self):
-        dataGarras = BoolGarras()
-        dataGarras.braco.data = 2
+        mao = 0
+        braco = 2
+        self.setDataGarras(mao, braco)
         self.pubGarras.publish(dataGarras)
-        rospy.loginfo("[PUBLISHED] subirBraco!")
+        #rospy.loginfo("[PUBLISHED] subirBraco!")
         self.rate.sleep()
-        print 'published'
+    
     def abrirMao(self):
-        dataGarras = BoolGarras()
-        dataGarras.mao.data = 2
+        mao = 2
+        braco = 0
+        self.setDataGarras(mao, braco)
         self.pubGarras.publish(dataGarras)
-        rospy.loginfo("[PUBLISHED] abrirMao!")
+        #rospy.loginfo("[PUBLISHED] abrirMao!")
         self.rate.sleep()
+    
     def fecharMao(self):
-        dataGarras = BoolGarras()
-        dataGarras.mao.data = 1
+        mao = 1
+        braco = 0
+        self.setDataGarras(mao, braco)
         self.pubGarras.publish(dataGarras)
-        rospy.loginfo("[PUBLISHED] fecharMao!")
+        #rospy.loginfo("[PUBLISHED] fecharMao!")
         self.rate.sleep()

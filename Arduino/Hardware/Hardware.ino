@@ -4,6 +4,7 @@
 #include <byakugan/RefletanciaMsg.h>
 #include <byakugan/BotoesMsg.h>
 #include <byakugan/SensoresDistanciaMsg.h>
+#include <byakugan/LedMsg.h>
 
 byakugan::RefletanciaMsg dataRefletancia;
 ros::Publisher pubRefletancia("refletancia", &dataRefletancia);
@@ -75,6 +76,15 @@ void garraCb(const std_msgs::Int32MultiArray &garra){
 
 ros::Subscriber<std_msgs::Int32MultiArray> subGarras("ctrl_garras", &garraCb);
 
+void ledsCb(const byakugan::LedMsg &leds){
+  //for(int i = 1; i <= 3; i++) robo.desligarLed(i);
+  if(leds.led1.data) robo.ligarLed(1);
+  if(leds.led2.data) robo.ligarLed(2);
+  if(leds.led3.data) robo.ligarLed(3);
+}
+
+ros::Subscriber<byakugan::LedMsg> subLeds("ctrl_leds", &ledsCb);
+
 
 void setup() {
 
@@ -87,6 +97,7 @@ void setup() {
   //pinMode(LED_SERVO2, OUTPUT);
 
   nh.subscribe(subMotores);
+  nh.subscribe(subLeds);
   //nh.subscribe(subGarras);
 
   nh.advertise(pubRefletancia);
@@ -99,8 +110,8 @@ void setup() {
 
 void loop() {
   
-  dataRefletancia.refletancia[1] = robo.lerSensorLinhaEsqSemRuido();
   dataRefletancia.refletancia[0] = robo.lerSensorLinhaMaisEsqSemRuido();
+  dataRefletancia.refletancia[1] = robo.lerSensorLinhaEsqSemRuido();
   dataRefletancia.refletancia[2] = robo.lerSensorLinhaDirSemRuido();
   dataRefletancia.refletancia[3] = robo.lerSensorLinhaMaisDirSemRuido();
 

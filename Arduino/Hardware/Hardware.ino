@@ -77,10 +77,9 @@ void garraCb(const std_msgs::Int32MultiArray &garra){
 ros::Subscriber<std_msgs::Int32MultiArray> subGarras("ctrl_garras", &garraCb);
 
 void ledsCb(const byakugan::LedMsg &leds){
-  //for(int i = 1; i <= 3; i++) robo.desligarLed(i);
-  if(leds.led1.data) robo.ligarLed(1);
-  if(leds.led2.data) robo.ligarLed(2);
-  if(leds.led3.data) robo.ligarLed(3);
+  robo.setEstadoLed(1, leds.led1.data);
+  robo.setEstadoLed(2, leds.led2.data);
+  robo.setEstadoLed(3, leds.led3.data);
 }
 
 ros::Subscriber<byakugan::LedMsg> subLeds("ctrl_leds", &ledsCb);

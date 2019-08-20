@@ -4,24 +4,26 @@
 import rospy
 import cv2
 import numpy as np
-#from byakugan.msg import CentroidObject
 from sensor_msgs.msg import CompressedImage
+#from byakugan.msg import CentroidObject
+#from std_msgs.msg import Int16
 
 class FindRectangle:
     def __init__(self):
         #self.pub = rospy.Publisher('centroid_rectangle', CentroidObject, queue_size=10, latch=True)
 
-        #rospy.init_node('find_rectangle', anonymous=False)
+        rospy.init_node('find_rectangle', anonymous=False)
 
         self.img = None
-        self.thresh = None
+        self.imgReal = None
 
-        #self.CENTER_WINDOW = (240/2), (320/2)
+        #self.CENTER_X = int((240/2))
 
     def callback(self, imgCompressed):
         np_arr = np.fromstring(imgCompressed.data, np.uint8)
     	self.img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     	self.img = cv2.flip(self.img, 2)
+        self.imgReal = self.img.copy()
         self.find()
         self.showImg()
 
@@ -41,7 +43,8 @@ class FindRectangle:
             self.drawRectangle(contours[len(contours) - 1], 10) # draw contorno da própria img
             contours = self.cookImg() # cozinha a img novamente separando possíveis contours colados na img inicial
 
-            for i in range(0, len(contours) - 1): # -1 impede de draw contour da propria img
+            indexCntImg = len(contours) - 1
+            for i in range(0, indexCntImg): # -1 impede de draw contour da propria img
 
                 cnt = contours[i]
 
@@ -55,12 +58,15 @@ class FindRectangle:
 
                 # aproxima pontos do contorno - corners
                 approx = cv2.approxPolyDP(cnt, .03 * cv2.arcLength(cnt, True), True)
-                print approx.ravel()
+                #print approx.ravel()
 
                 if self.isBigDist(approx): # verifica se o contorno é retangulo
                     # draw centro do contorno e retangulo no contorno
                     self.drawCentroid(cX, cY)
                     self.drawRectangle(cnt, 6)
+                    #diferenca = Int16()
+                    #diferenca.data = cX - self.CENTER_X
+                    #self.pub.publish(diferenca)
 
         except: # ???
             print 'error in img'
@@ -70,7 +76,7 @@ class FindRectangle:
         cv2.imshow('thresh', self.thresh)
         cv2.namedWindow('result', cv2.WINDOW_NORMAL)
         cv2.imshow('result', self.img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
     def isBigDist(self, approx):
         approxRavel = approx.ravel() # transforma em um vetor
@@ -122,7 +128,4 @@ class FindRectangle:
 
 if __name__ == "__main__":
     fr = FindRectangle()
-    fr.img = cv2.imread('c3v2i1.png', 1)
-    #img = cv2.imread('c1v2i1.png', 1)
-    fr.find()
-    fr.showImg()
+    fr.listenerImg()

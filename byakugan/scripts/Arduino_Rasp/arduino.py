@@ -18,7 +18,7 @@ def hardwareTalker():
     pubBtns = rospy.Publisher('botoes', BotoesMsg, queue_size=10)
     rate = rospy.Rate(20)
 
-    rospy.Subscriber('motores', Int32MultiArray, motoresCb)
+    rospy.Subscriber('ctrl_motores', Int32MultiArray, motoresCb)
 
     while not rospy.is_shutdown():
         dataRefletancia = RefletanciaMsg()

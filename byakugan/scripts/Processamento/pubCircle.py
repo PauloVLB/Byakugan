@@ -45,9 +45,10 @@ def pubCirculosEm(img):
 	dispo(copiaImg, circles)
 
 def callback(img):
+	
 	np_arr = np.fromstring(img.data, np.uint8)
 	imgCV = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
+	
 	pubCirculosEm(imgCV)
 	'''
 	imgCV = ponte.imgmsg_to_cv2(img, 'bgr8')
@@ -58,8 +59,8 @@ def callback(img):
 
 def listenerImg():
 	rospy.init_node('pubCircle', anonymous=True)
-	#rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, callback)
-	rospy.Subscriber("imgCam", Image, callback)
+	rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, callback)
+	#rospy.Subscriber("imgCam", Image, callback)
 	
 	rospy.spin()
 

@@ -26,12 +26,13 @@ class FindBalls:
         x, y, r = coordinates.vector.x, coordinates.vector.y, coordinates.vector.z
 
         if circle.existe.data:
-            acionarMotores(0, 0)
+            self.acionarMotores(0, 0)
         else:
-            acionarMotores(40, -40)
+            self.acionarMotores(25, -25)
 
     def acionarMotores(self, esq, dir):
         self.motores.data = [esq, dir]
+        rospy.loginfo(self.motores.data)
         self.pubMotores.publish(self.motores)
 
 if __name__ == "__main__":

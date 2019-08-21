@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
-import rospy
+import sys
+sys.path.append('../atuadores')
 import motores
+
+import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Int32MultiArray
 
@@ -21,14 +24,12 @@ def callback(data):
 
 def loop():
     pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
-    
+
     rospy.Subscriber("/turtle1/cmd_vel", Twist, callback)
     rospy.spin()
 
 if __name__ == "__main__":
     rospy.init_node("teleop", anonymous=True)
-    pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10) 
-    motores = Int32MultiArray()
-    motores.data = [0,0]
-   # motores = motores.Motores()
+    pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
+    motores = motores.Motores()
     loop()

@@ -4,17 +4,16 @@ import rospy
 import cv2
 import numpy as np
 from sensor_msgs.msg import CompressedImage
-#from byakugan.msg import CentroidObject
-#from std_msgs.msg import Int16
+from std_msgs.msg import Int16
 
 class FindRectangle:
     def __init__(self):
-        #self.pub = rospy.Publisher('centroid_rectangle', CentroidObject, queue_size=10, latch=True)
+        self.pub = rospy.Publisher('centroid_rectangle', Int16, queue_size=10, latch=True)
 
         rospy.init_node('find_rectangle', anonymous=False)
 
         self.img = None
-        #self.CENTER_X = int((240/2))
+        self.CENTER_X = int((240/2))
 
 
 
@@ -107,9 +106,9 @@ class FindRectangle:
                     # draw centro do contorno e retangulo no contorno
                     self.drawCentroid(cX, cY)
                     self.drawRectangle(cnt, 6)
-                    #diferenca = Int16()
-                    #diferenca.data = cX - self.CENTER_X
-                    #self.pub.publish(diferenca)
+                    diferenca = Int16()
+                    diferenca.data = cX - self.CENTER_X
+                    self.pub.publish(diferenca)
 
         except: # ???
             print 'error in img'

@@ -4,7 +4,7 @@ import numpy
 import message_filters
 from geometry_msgs.msg import Vector3Stamped
 from std_msgs.msg import Int32MultiArray
-from byakugan.msg import BoolStamped, SensoresDistanciaMsg, BotoesMsg
+from byakugan.msg import BoolStamped, SensoresDistanciaMsg, BotoesMsg, LedMsg
 
 class FindBalls:
     def __init__(self):
@@ -12,6 +12,9 @@ class FindBalls:
 
         self.motores = Int32MultiArray()
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
+        
+        self.leds = LedMsg()
+        self.pubLeds = rospy.Publisher("ctrl_leds", LedMsg, queue_size=10)
         
         subBtns = message_filters.Subscriber('botoes', BotoesMsg)  
         subDist = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
@@ -34,6 +37,16 @@ class FindBalls:
         self.motores.data = [esq, dir]
         rospy.loginfo(self.motores.data)
         self.pubMotores.publish(self.motores)
+
+    def setEstadoLed(self, led, estado):
+        if led == 1:
+            self.leds.led1.data = estado
+        if led == 2:
+            self.leds.led2.data = estado
+        if led == 3:
+            self.leds.led3.data = estado
+        
+        pubLeds.publish(self.leds)
 
 if __name__ == "__main__":
     node = FindBalls()

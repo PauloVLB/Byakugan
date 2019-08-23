@@ -44,5 +44,5 @@ class CmdMotores():
         self.dataMotores.esq.data = 0
         self.dataMotores.dir.data = 0
         self.dataMotores.delay.data = delay
-        self.pubMotores.publish(dataMotores)
+        self.pubMotores.publish(self.dataMotores)
         rospy.loginfo("[PUBLISHED] roboParar!")

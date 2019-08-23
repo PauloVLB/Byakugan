@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from byakugan.msg import BoolGarras 
+from byakugan.msg import BoolGarras
 
 class CmdGarras:
     def __init__(self, pub):
@@ -19,12 +19,8 @@ class CmdGarras:
     def subirBraco(self):
         self.dataGarras.braco.data = 2
         self.dataGarras.mao.data = 0
-        self.pub.publish(self.dataGarras)    
+        self.pub.publish(self.dataGarras)
     def abaixarBraco(self):
         self.dataGarras.braco.data = 1
         self.dataGarras.mao.data = 0
         self.pub.publish(self.dataGarras)
-    
-
-if __name__ == "__main__":
-        

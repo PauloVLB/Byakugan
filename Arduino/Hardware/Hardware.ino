@@ -56,22 +56,6 @@ int lastValue1 = 0;
 void garraCb(const std_msgs::Int32MultiArray &garra){
   robo.acionarServoGarra1(garra.data[0]);
   robo.acionarServoGarra2(garra.data[1]);
-
-  if ((garra.data[0] - lastValue0) > 0) {
-    robo.ligarLed(1);
-  } else {
-    robo.desligarLed(1);
-  }
-
-  lastValue0 = garra.data[0];
-
-  if ((garra.data[1] - lastValue1) > 0) {
-    robo.ligarLed(2);
-  } else {
-    robo.desligarLed(2);
-  }
-
-  lastValue1 = garra.data[1];
 }
 
 ros::Subscriber<std_msgs::Int32MultiArray> subGarras("ctrl_garras", &garraCb);
@@ -97,13 +81,15 @@ void setup() {
 
   nh.subscribe(subMotores);
   nh.subscribe(subLeds);
-  //nh.subscribe(subGarras);
+  nh.subscribe(subGarras);
 
   nh.advertise(pubRefletancia);
   nh.advertise(pubDist);
   nh.advertise(pubBtns);
   
   robo.configurar(true);
+  robo.acionarServoGarra2(110);
+  robo.acionarServoGarra1(70);
   //robo.habilitaTCS34();
 }
 

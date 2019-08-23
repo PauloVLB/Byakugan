@@ -29,8 +29,10 @@ class FindBalls:
         x, y, r = coordinates.vector.x, coordinates.vector.y, coordinates.vector.z
 
         if circle.existe.data:
+            self.setEstadoLed(2, True)
             self.acionarMotores(0, 0)
         else:
+            self.setEstadoLed(2, False)
             self.acionarMotores(25, -25)
 
     def acionarMotores(self, esq, dir):

@@ -8,6 +8,22 @@ class CmdGarras:
         self.pub = pub
         self.dataGarras = BoolGarras()
 
+    def resgatar(self):
+        self.dataGarras.mao.data = 0
+        self.dataGarras.braco.data = 80
+        self.pub.publish(self.dataGarras)
+        self.abrirMao()
+        for i in range (0, 4):
+            self.dataGarras.braco.data = 86
+            self.pub.publish(self.dataGarras)
+            self.dataGarras.braco.data = 68
+            self.pub.publish(self.dataGarras)
+
+        self.fecharMao()
+        self.dataGarras.braco.data = 110
+        self.pub.publish(self.dataGarras)
+
+
     def abrirMao(self):
         self.dataGarras.mao.data = 1
         self.dataGarras.braco.data = 0

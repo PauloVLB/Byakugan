@@ -11,18 +11,18 @@ class Garras():
         rospy.Subscriber('cmdGarras', BoolGarras, self.__callback)
 
         # braco
-        self.ANG_INICIAL_BAIXAR_BRACO = 80
-        self.ANG_FINAL_BAIXAR_BRACO = 10
+        self.ANG_INICIAL_BAIXAR_BRACO = 110
+        self.ANG_FINAL_BAIXAR_BRACO = 26
 
-        self.ANG_INICIAL_SUBIR_BRACO = 10
-        self.ANG_FINAL_SUBIR_BRACO = 80
+        self.ANG_INICIAL_SUBIR_BRACO = 110
+        self.ANG_FINAL_SUBIR_BRACO = 26
 
         # mao
-        self.ANG_INICIAL_ABRIR_MAO = 90
-        self.ANG_FINAL_ABRIR_MAO = 0
+        self.ANG_INICIAL_ABRIR_MAO = 80
+        self.ANG_FINAL_ABRIR_MAO = 30
 
-        self.ANG_INICIAL_FECHAR_MAO = 0
-        self.ANG_FINAL_FECHAR_MAO = 90
+        self.ANG_INICIAL_FECHAR_MAO = 30
+        self.ANG_FINAL_FECHAR_MAO = 80
 
         self.DELAY = 0.005
         self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
@@ -40,8 +40,8 @@ class Garras():
         rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
 
     def __callback(self, dataGarras):
-        # mao - 2: abrir 1: fechar 0: nada
-        # braco - 2: subir 1: abaixar 0: nada
+        # mao .. abrir = 1 / fechar = 2 / 0 = nothing
+        # braco ..  abaixar = 1 / subir = 2 / 0 = nothing
 
         rospy.loginfo(rospy.get_caller_id() + " - msg received!")
 
@@ -50,11 +50,11 @@ class Garras():
         dataMao = dataGarras.mao.data
         dataBraco = dataGarras.braco.data
 
-        if dataMao == 2 and dataMao != self.cacheMao: # impede publicações desnecessárias
+        if dataMao == 1 and dataMao != self.cacheMao: # impede publicações desnecessárias
             self.__abrirMao()
             self.cacheMao = dataMao
-            rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
-        elif dataMao == 1 and dataMao != self.cacheMao:
+            rospy.loginfo("Note:     cacheMao was changed to " + str(dataMao))
+        elif dataMao == 2 and dataMao != self.cacheMao:
             self.__fecharMao()
             self.cacheMao = dataMao
             rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))

@@ -14,8 +14,8 @@ class PegarBola:
         elif not self.pegueiVitima:
             rospy.loginfo("Estou perto")
             self.acionarMotores(0,0)
-            self.cmd.abaixarBraco()
             self.cmd.abrirMao()
+            self.cmd.abaixarBraco()
             self.cmd.fecharMao()
             self.cmd.subirBraco()
             self.pegueiVitima = True

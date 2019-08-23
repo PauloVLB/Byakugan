@@ -14,39 +14,66 @@ class Teleop:
       self.pubGarras = rospy.Publisher("cmdGarras", BoolGarras, queue_size=10)
       self.cmdGarras = CmdGarras(self.pubGarras)
       self.cmdMotores = CmdMotores(self.pubMotores)
+      self.running == 0
       curses.wrapper(self.main)
 
    def main(self, win):
-    win.nodelay(True)
-    key=""
-    win.clear()                
-    win.addstr("Detected key:")
-    while 1:          
-        try:                 
-           key = win.getkey()         
-           win.clear()                
-           win.addstr("Detected key:")
+      win.nodelay(True)
+      key=""
+      win.clear()                
+      win.addstr("Detected key:")
+      while 1:          
+         try:                 
+            key = win.getkey()         
+            win.clear()                
+            win.addstr("Detected key:")
            
-           if(key == 'KEY_UP'):
-              win.addstr("cima")
-           elif(key == 'KEY_DOWN'):
-              win.addstr("baixo")
-           elif(key == 'KEY_LEFT'):
-              win.addstr("esquerda")
-           elif(key == 'KEY_RIGHT'):
-              win.addstr("direita")
-           elif(key == 'q'):
-              win.addstr("abaixa")
-           elif(key == 'r'):
-              win.addstr("levanta")
-              
+            if(key == 'KEY_UP'):
+               win.addstr("frente")
+               if self.running == 0:
+                  self.cmdMotores.roboEmFrente()
+                  self.running = 1
+               else:
+                  self.running = 0
+                  self.cmdMotores.roboParar()
+            elif(key == 'KEY_DOWN'):
+               win.addstr("baixo")
+               if self.running == 0:
+                  self.cmdMotores.roboParaTras()
+                  self.running = 1
+               else:
+                  self.running = 0
+                  self.cmdMotores.roboParar()
+            elif(key == 'KEY_LEFT'):
+               win.addstr("esquerda")
+               if self.running == 0:
+                  self.cmdMotores.roboEsq()
+                  self.running = 1
+               else:
+                  self.running = 0
+                  self.cmdMotores.roboParar()
+            elif(key == 'KEY_RIGHT'):
+               win.addstr("direita")
+               if self.running == 0:
+                  self.cmdMotores.roboDir()
+                  self.running = 1
+               else:
+                  self.running = 0
+                  self.cmdMotores.roboParar()
+            elif(key == 'q'):
+               win.addstr("abaixa")
+               self.cmdGarras.abrirMao()
+               self.cmdGarras.abaixarMao()
+            elif(key == 'r'):
+               win.addstr("levanta")
+               self.cmdGarras.fechar()
+               self.cmdGarras.subirMao()
 
-           if key == os.linesep:
-              break           
-        except Exception as e:
-           # No input   
-           pass         
-
+            if key == os.linesep:
+               break           
+         except Exception as e:
+            # No input   
+            pass         
 
 if __name__ == "__main__":
    t = Teleop()

@@ -103,13 +103,13 @@ void setup() {
   nh.advertise(pubRefletancia);
   nh.advertise(pubDist);
   nh.advertise(pubBtns);
-  
+
   robo.configurar(true);
   //robo.habilitaTCS34();
 }
 
 void loop() {
-  
+
   dataRefletancia.refletancia[0] = robo.lerSensorLinhaMaisEsqSemRuido();
   dataRefletancia.refletancia[1] = robo.lerSensorLinhaEsqSemRuido();
   dataRefletancia.refletancia[2] = robo.lerSensorLinhaDirSemRuido();

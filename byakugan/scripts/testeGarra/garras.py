@@ -10,18 +10,20 @@ class Garras():
     def __init__(self):
 
         # braco
-        self.ANG_INICIAL_BAIXAR_BRACO = 80
-        self.ANG_FINAL_BAIXAR_BRACO = 10
+        self.ANG_INICIAL_BAIXAR_BRACO = 110
+        self.ANG_FINAL_BAIXAR_BRACO = 26
 
-        self.ANG_INICIAL_SUBIR_BRACO = 10
-        self.ANG_FINAL_SUBIR_BRACO = 80
+        self.ANG_INICIAL_SUBIR_BRACO = 26
+        self.ANG_FINAL_SUBIR_BRACO = 110
 
+        rospy.loginfo('passei por aqui')
+        
         # mao
-        self.ANG_INICIAL_ABRIR_MAO = 90
-        self.ANG_FINAL_ABRIR_MAO = 0
+        self.ANG_INICIAL_ABRIR_MAO = 80
+        self.ANG_FINAL_ABRIR_MAO = 30
 
-        self.ANG_INICIAL_FECHAR_MAO = 0
-        self.ANG_FINAL_FECHAR_MAO = 90
+        self.ANG_INICIAL_FECHAR_MAO = 30
+        self.ANG_FINAL_FECHAR_MAO = 80
 
         self.DELAY = 0.005
         self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
@@ -30,13 +32,13 @@ class Garras():
         self.cacheBraco = 2 # levantado
         self.cacheMao = 1 # fechada
 
-        self.angAtualMao = 90
+        self.angAtualMao = 80
         self.angAtualBraco = 90
 
         # publisher
         self.rate = rospy.Rate(20)
         self.pubGarras = rospy.Publisher('ctrl_garras', Int32MultiArray, queue_size=10)
-        rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
+        rospy.loginfo("Setup publisher on ctrl_garras [std_msgs.msg/Int32MultiArray]")
 
     def listener(self):
         rospy.Subscriber('est_garras', BoolGarras, self.callback)
@@ -79,10 +81,10 @@ class Garras():
             # publica em espaços aos poucos do angInicial ao angFinal
             for i in range(angInicial, angFinal, -1):
                 if servo == self.BRACO: # diferenciando a publicacao para o braco e a mao
-                    dataGarras.data = [i, self.angAtualMao] # [braco, mao]
+                    dataGarras.data = [self.angAtualMao, i] # [braco, mao]
                     self.angAtualBraco = i
                 elif servo == self.MAO:
-                    dataGarras.data = [self.angAtualBraco, i] # [braco, mao
+                    dataGarras.data = [i, self.angAtualBraco] # [braco, mao
                     self.angAtualMao = i
 
                 self.pubGarras.publish(dataGarras)

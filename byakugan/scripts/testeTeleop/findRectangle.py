@@ -1,22 +1,24 @@
-#!/usr/bin/env python-
+#!/usr/bin/env python
 
 import rospy
 import cv2
 import numpy as np
 from sensor_msgs.msg import CompressedImage
-from std_msgs.msg import Int16
+from byakugan.msg import BoolStamped
 
 class FindRectangle:
     def __init__(self):
-        self.pub = rospy.Publisher('centroid_rectangle', Int16, queue_size=10, latch=True)
-
         rospy.init_node('find_rectangle', anonymous=False)
 
+        self.pub = rospy.Publisher('centroid_rectangle', BoolStamped, queue_size=10, latch=True)
+        rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, self.callback)
+
         self.img = None
-        self.CENTER_X = int((240/2))
+        self.thresh = None
 
+        self.CENTER_X = int((320/2))
 
-
+        rospy.spin()
 
     def showImg(self):
         cv2.namedWindow('thresh', cv2.WINDOW_NORMAL)
@@ -102,13 +104,18 @@ class FindRectangle:
                 approx = cv2.approxPolyDP(cnt, .03 * cv2.arcLength(cnt, True), True)
                 #print approx.ravel()
 
-                if self.isBigDist(approx): # verifica se o contorno é retangulo
+                if self.isBigDist(approx): # verifica se o contorno eh retangulo
                     # draw centro do contorno e retangulo no contorno
                     self.drawCentroid(cX, cY)
                     self.drawRectangle(cnt, 6)
-                    diferenca = Int16()
-                    diferenca.data = cX - self.CENTER_X
-                    self.pub.publish(diferenca)
+                    areaBool = BoolStamped()
+                    areaBool.existe.data = True
+                    areaBool.centroid.data = int(cX - self.CENTER_X)
+                    self.pub.publish(areaBool)
+                else:
+                    areaBool = BoolStamped()
+                    areaBool.existe.data = False
+                    self.pub.publish(areaBool)
 
         except: # ???
             print 'error in img'
@@ -120,10 +127,6 @@ class FindRectangle:
         self.find()
         self.showImg()
 
-    def listenerImg(self):
-    	rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, self.callback)
-    	rospy.spin()
-
 if __name__ == "__main__":
     fr = FindRectangle()
-    fr.listenerImg()
+    rospy.spin()

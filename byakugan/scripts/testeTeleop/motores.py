@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import rospy
 from std_msgs.msg import Int32MultiArray
@@ -28,11 +27,8 @@ class Motores():
 
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
         rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
-
-
-    def listener(self):
-        rospy.Subscriber("est_motores", CtrlMotores, self.callback)
-        rospy.spin()
+        rospy.Subscriber("cmdMotores", CtrlMotores, self.callback)
+        rospy.loginfo("Setup subscriber on cmdMotores [byakugan_msgs.msg/CtrlMotores]")
 
     def callback(self, dataMotores):
 
@@ -50,17 +46,17 @@ class Motores():
         if vel_default:
             if not dataMotores.rampa.data:
                 if esqFrente and dirFrente:
-                    self.roboEmFrente(delayPub)
+                    self.__roboEmFrente(delayPub)
                 elif dirFrente:
-                    self.roboEsq(delayPub)
+                    self.__roboEsq(delayPub)
                 elif esqFrente:
-                    self.roboDir(delayPub)
+                    self.__roboDir(delayPub)
                 elif esq < 0 and dir < 0:
-                    self.roboParaTras(delayPub)
+                    self.__roboParaTras(delayPub)
                 else:
-                    self.roboParar(delayPub)
+                    self.__roboParar(delayPub)
         else:
-            self.roboAcionarMotores(esq, dir, delayPub)
+            self.__roboAcionarMotores(esq, dir, delayPub)
         '''
         elif esqFrente and dirFrente:
             self.emFrenteRampa(delayPub)
@@ -70,7 +66,7 @@ class Motores():
             self.direitaRampa(delayPub)
         '''
 
-    def pubDelayMotores(self, velEsq, velDir, delay):
+    def __pubDelayMotores(self, velEsq, velDir, delay):
         dataMotores = Int32MultiArray()
         tInicio = time.time()
         tAtual = tInicio
@@ -97,30 +93,30 @@ class Motores():
             rospy.loginfo("[PUBLISHED] - " + str(dataMotores.data))
 
     # seguir linha
-    def roboAcionarMotores(self, esq, dir, delay=0):
-        self.pubDelayMotores(esq, dir, delay)
+    def __roboAcionarMotores(self, esq, dir, delay=0):
+        self.__pubDelayMotores(esq, dir, delay)
 
-    def roboEmFrente(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_FRENTE, self.VEL_DIR_FRENTE, delay)
-    def roboDir(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_FRENTE, self.VEL_DIR_TRAS, delay)
-    def roboEsq(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_TRAS, self.VEL_DIR_FRENTE, delay)
-    def roboParaTras(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_TRAS, self.VEL_DIR_TRAS, delay)
-    def roboParar(self, delay=0):
-        self.pubDelayMotores(0, 0, delay)
+    def __roboEmFrente(self, delay=0):
+        self.__pubDelayMotores(self.VEL_ESQ_FRENTE, self.VEL_DIR_FRENTE, delay)
+    def __roboDir(self, delay=0):
+        self.__pubDelayMotores(self.VEL_ESQ_FRENTE, self.VEL_DIR_TRAS, delay)
+    def __roboEsq(self, delay=0):
+        self.__pubDelayMotores(self.VEL_ESQ_TRAS, self.VEL_DIR_FRENTE, delay)
+    def __roboParaTras(self, delay=0):
+        self.__pubDelayMotores(self.VEL_ESQ_TRAS, self.VEL_DIR_TRAS, delay)
+    def __roboParar(self, delay=0):
+        self.__pubDelayMotores(0, 0, delay)
 
     '''
     # subir rampa
     def roboEmFrenteRampa(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_FRENTE_RAMPA, self.VEL_DIR_FRENTE_RAMPA, delay)
+        self.__pubDelayMotores(self.VEL_ESQ_FRENTE_RAMPA, self.VEL_DIR_FRENTE_RAMPA, delay)
     def roboDirRampa(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_FRENTE_RAMPA, self.VEL_DIR_TRAS_RAMPA, delay)
+        self.__pubDelayMotores(self.VEL_ESQ_FRENTE_RAMPA, self.VEL_DIR_TRAS_RAMPA, delay)
     def roboEsqRampa(self, delay=0):
-        self.pubDelayMotores(self.VEL_ESQ_TRAS_RAMPA, self.VEL_DIR_FRENTE_RAMPA, delay)
+        self.__pubDelayMotores(self.VEL_ESQ_TRAS_RAMPA, self.VEL_DIR_FRENTE_RAMPA, delay)
     '''
 
 if __name__ == "__main__":
     motores = Motores()
-    motores.listener()
+    rospy.spin()

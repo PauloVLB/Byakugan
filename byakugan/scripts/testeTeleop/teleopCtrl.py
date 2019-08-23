@@ -1,23 +1,25 @@
 #!/usr/bin/env python
 
 import rospy
-import motores
 from geometry_msgs.msg import Twist
+from byakugan.msg import CtrlMotores
+import cmdMotores
 
 def callback(data):
     if data.linear.x == 2:
-        motores.roboEmFrente(.1)
+        cmd.roboEmFrente(.5)
     elif data.linear.x == -2:
-        motores.roboParaTras(.1)
+        cmd.roboParaTras(.5)
     elif data.angular.z == 2:
-        motores.roboEsq(.1)
+        cmd.roboEsq(.5)
     elif data.angular.z == -2:
-        motores.roboDir(.1)
+        cmd.roboDir(.5)
 
-def loop():
-    rospy.Subscriber("/turtle1/cmd_vel", Twist, callback)
-    rospy.spin()
+rospy.init_node("teleopCtrl", anonymous=False)
+pub = rospy.Publisher("cmdMotores", CtrlMotores, queue_size=10, latch=True)
+rospy.Subscriber("/turtle1/cmd_vel", Twist, callback)
+
 
 if __name__ == "__main__":
-    motores = motores.Motores()
-    loop()
+    cmd = cmdMotores.CmdMotores(pub)
+    rospy.spin()

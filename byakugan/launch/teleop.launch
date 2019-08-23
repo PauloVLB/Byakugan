@@ -1,0 +1,12 @@
+<launch>
+	<arg name="portArduino" default="/dev/ttyUSB0"/>
+	<arg name="baudArduino" default="115200"/>
+
+	<node pkg="rosserial_python" type="serial_node.py" name="serial_node">
+		<param name="baud" value="$(arg baudArduino)"/>
+		<param name="port" value="$(arg portArduino)"/>
+	</node>
+
+	<node name="motores" pkg="byakugan" type="motores.py"/>
+	<node name="teleopCtrl" pkg="byakugan" type="teleopCtrl.py"/>
+</launch>

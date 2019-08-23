@@ -8,6 +8,7 @@ from byakugan.msg import BoolGarras
 
 class Garras():
     def __init__(self):
+        rospy.Subscriber('cmdGarras', BoolGarras, self.__callback)
 
         # braco
         self.ANG_INICIAL_BAIXAR_BRACO = 80
@@ -38,12 +39,9 @@ class Garras():
         self.pubGarras = rospy.Publisher('ctrl_garras', Int32MultiArray, queue_size=10)
         rospy.loginfo("Setup publisher on ctrl_motores [std_msgs.msg/Int32MultiArray]")
 
-    def listener(self):
-        rospy.Subscriber('est_garras', BoolGarras, self.callback)
-        rospy.spin()
-    def callback(self, dataGarras):
-        # mao - True: abrir False: fechar
-        # braco - True: subir False: abaixar
+    def __callback(self, dataGarras):
+        # mao - 2: abrir 1: fechar 0: nada
+        # braco - 2: subir 1: abaixar 0: nada
 
         rospy.loginfo(rospy.get_caller_id() + " - msg received!")
 
@@ -53,24 +51,24 @@ class Garras():
         dataBraco = dataGarras.braco.data
 
         if dataMao == 2 and dataMao != self.cacheMao: # impede publicações desnecessárias
-            self.abrirMao()
+            self.__abrirMao()
             self.cacheMao = dataMao
             rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
         elif dataMao == 1 and dataMao != self.cacheMao:
-            self.fecharMao()
+            self.__fecharMao()
             self.cacheMao = dataMao
             rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
 
         if dataBraco == 2 and dataBraco != self.cacheBraco:
-            self.subirBraco()
+            self.__subirBraco()
             self.cacheBraco = dataBraco
             rospy.loginfo("Note: cacheBraco was changed to " + str(dataBraco))
         elif dataBraco == 1 and dataBraco != self.cacheBraco:
-            self.abaixarBraco()
+            self.__abaixarBraco()
             self.cacheBraco = dataBraco
             rospy.loginfo("Note: cacheBraco was changed to " + str(dataBraco))
 
-    def setPosicao(self, servo, angInicial, angFinal, delay=None):
+    def __setPosicao(self, servo, angInicial, angFinal, delay=None):
         if delay is None:
             delay = self.DELAY
 
@@ -107,16 +105,16 @@ class Garras():
                 if not i == angFinal:
                     time.sleep(float(delay))
 
-    def abaixarBraco(self):
-        self.setPosicao(self.BRACO, self.ANG_INICIAL_BAIXAR_BRACO, self.ANG_FINAL_BAIXAR_BRACO)
-    def subirBraco(self):
-        self.setPosicao(self.BRACO, self.ANG_INICIAL_SUBIR_BRACO, self.ANG_FINAL_SUBIR_BRACO)
-    def abrirMao(self):
-        self.setPosicao(self.MAO, self.ANG_INICIAL_ABRIR_MAO, self.ANG_FINAL_ABRIR_MAO)
-    def fecharMao(self):
-        self.setPosicao(self.MAO, self.ANG_INICIAL_FECHAR_MAO, self.ANG_FINAL_FECHAR_MAO)
+    def __abaixarBraco(self):
+        self.__setPosicao(self.BRACO, self.ANG_INICIAL_BAIXAR_BRACO, self.ANG_FINAL_BAIXAR_BRACO)
+    def __subirBraco(self):
+        self.__setPosicao(self.BRACO, self.ANG_INICIAL_SUBIR_BRACO, self.ANG_FINAL_SUBIR_BRACO)
+    def __abrirMao(self):
+        self.__setPosicao(self.MAO, self.ANG_INICIAL_ABRIR_MAO, self.ANG_FINAL_ABRIR_MAO)
+    def __fecharMao(self):
+        self.__setPosicao(self.MAO, self.ANG_INICIAL_FECHAR_MAO, self.ANG_FINAL_FECHAR_MAO)
 
 if __name__ == "__main__":
     rospy.init_node('garras', anonymous=False)
     garras = Garras()
-    garras.listener()
+    rospy.spin()

@@ -13,11 +13,9 @@ class Garras():
         self.ANG_INICIAL_BAIXAR_BRACO = 110
         self.ANG_FINAL_BAIXAR_BRACO = 26
 
-        self.ANG_INICIAL_SUBIR_BRACO = 26
         self.ANG_FINAL_SUBIR_BRACO = 110
+        self.ANG_INICIAL_SUBIR_BRACO = 26
 
-        rospy.loginfo('passei por aqui')
-        
         # mao
         self.ANG_INICIAL_ABRIR_MAO = 80
         self.ANG_FINAL_ABRIR_MAO = 30
@@ -33,7 +31,7 @@ class Garras():
         self.cacheMao = 1 # fechada
 
         self.angAtualMao = 80
-        self.angAtualBraco = 90
+        self.angAtualBraco = 110
 
         # publisher
         self.rate = rospy.Rate(20)
@@ -44,8 +42,8 @@ class Garras():
         rospy.Subscriber('est_garras', BoolGarras, self.callback)
         rospy.spin()
     def callback(self, dataGarras):
-        # mao - True: abrir False: fechar
-        # braco - True: subir False: abaixar
+        # mao .. abrir = 1 / fechar = 2 / 0 = nothing
+        # braco ..  abaixar = 1 / subir = 2 / 0 = nothing
 
         rospy.loginfo(rospy.get_caller_id() + " - msg received!")
 
@@ -54,11 +52,11 @@ class Garras():
         dataMao = dataGarras.mao.data
         dataBraco = dataGarras.braco.data
 
-        if dataMao == 2 and dataMao != self.cacheMao: # impede publicações desnecessárias
+        if dataMao == 1 and dataMao != self.cacheMao: # impede publicações desnecessárias
             self.abrirMao()
             self.cacheMao = dataMao
             rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
-        elif dataMao == 1 and dataMao != self.cacheMao:
+        elif dataMao == 2 and dataMao != self.cacheMao:
             self.fecharMao()
             self.cacheMao = dataMao
             rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))

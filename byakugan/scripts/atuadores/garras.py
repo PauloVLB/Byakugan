@@ -12,27 +12,27 @@ class Garras():
 
         # braco
         self.ANG_INICIAL_BAIXAR_BRACO = 110
-        self.ANG_FINAL_BAIXAR_BRACO = 26
+        self.ANG_FINAL_BAIXAR_BRACO = 28
 
-        self.ANG_INICIAL_SUBIR_BRACO = 110
-        self.ANG_FINAL_SUBIR_BRACO = 26
+        self.ANG_INICIAL_SUBIR_BRACO = 28
+        self.ANG_FINAL_SUBIR_BRACO = 110
 
         # mao
-        self.ANG_INICIAL_ABRIR_MAO = 80
+        self.ANG_INICIAL_ABRIR_MAO = 86
         self.ANG_FINAL_ABRIR_MAO = 30
 
         self.ANG_INICIAL_FECHAR_MAO = 30
-        self.ANG_FINAL_FECHAR_MAO = 80
+        self.ANG_FINAL_FECHAR_MAO = 86
 
         self.DELAY = 0.005
         self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
         self.MAO = 2 # diferenciando a publicacao para o braco e a mao
 
         self.cacheBraco = 2 # levantado
-        self.cacheMao = 1 # fechada
+        self.cacheMao = 2 # fechada
 
-        self.angAtualMao = 90
-        self.angAtualBraco = 90
+        self.angAtualMao = 80
+        self.angAtualBraco = 110
 
         # publisher
         self.rate = rospy.Rate(20)
@@ -52,35 +52,44 @@ class Garras():
 
         if dataMao == 1 and dataMao != self.cacheMao: # impede publicações desnecessárias
             self.__abrirMao()
-            self.cacheMao = dataMao
-            rospy.loginfo("Note:     cacheMao was changed to " + str(dataMao))
-        elif dataMao == 2 and dataMao != self.cacheMao:
-            self.__fecharMao()
+            rospy.loginfo("Note: abrirMao")
             self.cacheMao = dataMao
             rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
+        elif dataMao == 2 and dataMao != self.cacheMao:
+            self.__fecharMao()
+            rospy.loginfo("Note: fecharMao")
+            self.cacheMao = dataMao
+            rospy.loginfo("Note: cacheMao was changed to " + str(dataMao))
+        elif dataMao > 2:
+            self.__acionarMao(dataMao)
 
         if dataBraco == 2 and dataBraco != self.cacheBraco:
             self.__subirBraco()
+            rospy.loginfo("Note: subirBraco")
             self.cacheBraco = dataBraco
             rospy.loginfo("Note: cacheBraco was changed to " + str(dataBraco))
         elif dataBraco == 1 and dataBraco != self.cacheBraco:
             self.__abaixarBraco()
+            rospy.loginfo("Note: abaixarBraco")
             self.cacheBraco = dataBraco
             rospy.loginfo("Note: cacheBraco was changed to " + str(dataBraco))
+        elif dataBraco > 2:
+            self.__acionarBraco(dataBraco)
 
     def __setPosicao(self, servo, angInicial, angFinal, delay=None):
         if delay is None:
             delay = self.DELAY
 
         dataGarras = Int32MultiArray()
+
         if angInicial > angFinal: # diminuir angulo
             # publica em espaços aos poucos do angInicial ao angFinal
             for i in range(angInicial, angFinal, -1):
                 if servo == self.BRACO: # diferenciando a publicacao para o braco e a mao
-                    dataGarras.data = [i, self.angAtualMao] # [braco, mao]
+                    dataGarras.data = [self.angAtualMao, i] # [braco, mao]
                     self.angAtualBraco = i
                 elif servo == self.MAO:
-                    dataGarras.data = [self.angAtualBraco, i] # [braco, mao
+                    dataGarras.data = [i, self.angAtualBraco] # [braco, mao
                     self.angAtualMao = i
 
                 self.pubGarras.publish(dataGarras)
@@ -93,10 +102,10 @@ class Garras():
             # publica em espaços aos poucos do angInicial ao angFinal
             for i in range(angInicial, angFinal):
                 if servo == self.BRACO: # diferenciando a publicacao para o braco e a mao
-                    dataGarras.data = [i, self.angAtualMao] # [braco, mao]
+                    dataGarras.data = [self.angAtualMao, i] # [braco, mao]
                     self.angAtualBraco = i
                 elif servo == self.MAO:
-                    dataGarras.data = [self.angAtualBraco, i] # [braco, mao
+                    dataGarras.data = [i, self.angAtualBraco] # [braco, mao
                     self.angAtualMao = i
 
                 self.pubGarras.publish(dataGarras)
@@ -105,6 +114,10 @@ class Garras():
                 if not i == angFinal:
                     time.sleep(float(delay))
 
+    def __acionarMao(self, mao):
+        self.__setPosicao(self.MAO, self.angAtualMao, mao)
+    def __acionarBraco(self, braco):
+        self.__setPosicao(self.BRACO, self.angAtualBraco, braco)
     def __abaixarBraco(self):
         self.__setPosicao(self.BRACO, self.ANG_INICIAL_BAIXAR_BRACO, self.ANG_FINAL_BAIXAR_BRACO)
     def __subirBraco(self):

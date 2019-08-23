@@ -1,33 +1,33 @@
-
 #!/usr/bin/env python
-import rospy 
+
+import rospy
 import curses
 import os
-from cmdGarras import CmdGarras  
+from cmdGarras import CmdGarras
 from cmdMotores import CmdMotores
 from byakugan.msg import CtrlMotores, BoolGarras
 
 class Teleop:
    def __init__(self):
-      rospy.init_node("Teleop", anonymous=True)
+      rospy.init_node("teleop", anonymous=True)
       self.pubMotores = rospy.Publisher("cmdMotores", CtrlMotores, queue_size=10)
       self.pubGarras = rospy.Publisher("cmdGarras", BoolGarras, queue_size=10)
       self.cmdGarras = CmdGarras(self.pubGarras)
       self.cmdMotores = CmdMotores(self.pubMotores)
-      self.running == 0
+      self.running = 0
       curses.wrapper(self.main)
 
    def main(self, win):
       win.nodelay(True)
       key=""
-      win.clear()                
+      win.clear()
       win.addstr("Detected key:")
-      while 1:          
-         try:                 
-            key = win.getkey()         
-            win.clear()                
+      while 1:
+         try:
+            key = win.getkey()
+            win.clear()
             win.addstr("Detected key:")
-           
+
             if(key == 'KEY_UP'):
                win.addstr("frente")
                if self.running == 0:
@@ -63,19 +63,21 @@ class Teleop:
             elif(key == 'q'):
                win.addstr("abaixa")
                self.cmdGarras.abrirMao()
-               self.cmdGarras.abaixarMao()
+               self.cmdGarras.abaixarBraco()
             elif(key == 'r'):
                win.addstr("levanta")
-               self.cmdGarras.fechar()
-               self.cmdGarras.subirMao()
+               self.cmdGarras.fecharMao()
+               self.cmdGarras.subirBraco()
+            elif(key == 's'):
+               win.addstr("salvar")
+               self.cmdGarras.resgatar()
 
             if key == os.linesep:
-               break           
+               break
          except Exception as e:
-            # No input   
-            pass         
+            # No input
+            pass
 
 if __name__ == "__main__":
    t = Teleop()
    rospy.spin()
-

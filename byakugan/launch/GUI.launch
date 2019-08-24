@@ -1,6 +1,4 @@
 <launch>
-	<!-- <node pkg="byakugan" type="arduino.py" name="simulador"/> -->
-	<node pkg="byakugan" type="refletanciaGUI.py" name="refletancia"/>
-	<node pkg="byakugan" type="distanciaGUI.py" name="distancia"/>
-	<node pkg="byakugan" type="showAllCircles.py" name="allCircles"/>	
+	<node pkg="byakugan" type="showDeBola.py" name="showDeBola"/>
+	<node pkg="byakugan" type="findRectangle.py" name="findRectangle"/>
 </launch>

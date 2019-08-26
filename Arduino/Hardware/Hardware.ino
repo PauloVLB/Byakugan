@@ -4,7 +4,7 @@
 #include <byakugan/RefletanciaMsg.h>
 #include <byakugan/BotoesMsg.h>
 #include <byakugan/SensoresDistanciaMsg.h>
-#include <byakugan/LedMsg.h>
+//#include <byakugan/LedMsg.h>
 
 byakugan::RefletanciaMsg dataRefletancia;
 ros::Publisher pubRefletancia("refletancia", &dataRefletancia);
@@ -56,26 +56,11 @@ int lastValue1 = 0;
 void garraCb(const std_msgs::Int32MultiArray &garra){
   robo.acionarServoGarra1(garra.data[0]);
   robo.acionarServoGarra2(garra.data[1]);
-
-  if ((garra.data[0] - lastValue0) > 0) {
-    robo.ligarLed(1);
-  } else {
-    robo.desligarLed(1);
-  }
-
-  lastValue0 = garra.data[0];
-
-  if ((garra.data[1] - lastValue1) > 0) {
-    robo.ligarLed(2);
-  } else {
-    robo.desligarLed(2);
-  }
-
-  lastValue1 = garra.data[1];
 }
 
 ros::Subscriber<std_msgs::Int32MultiArray> subGarras("ctrl_garras", &garraCb);
 
+/*
 void ledsCb(const byakugan::LedMsg &leds){
   robo.setEstadoLed(1, leds.led1.data);
   robo.setEstadoLed(2, leds.led2.data);
@@ -83,7 +68,7 @@ void ledsCb(const byakugan::LedMsg &leds){
 }
 
 ros::Subscriber<byakugan::LedMsg> subLeds("ctrl_leds", &ledsCb);
-
+*/
 
 void setup() {
 
@@ -96,14 +81,16 @@ void setup() {
   //pinMode(LED_SERVO2, OUTPUT);
 
   nh.subscribe(subMotores);
-  nh.subscribe(subLeds);
-  //nh.subscribe(subGarras);
+  //nh.subscribe(subLeds);
+  nh.subscribe(subGarras);
 
   nh.advertise(pubRefletancia);
   nh.advertise(pubDist);
   nh.advertise(pubBtns);
   
   robo.configurar(true);
+  robo.acionarServoGarra2(110);
+  robo.acionarServoGarra1(0);
   //robo.habilitaTCS34();
 }
 

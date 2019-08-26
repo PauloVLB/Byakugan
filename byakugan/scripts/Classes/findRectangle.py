@@ -52,13 +52,13 @@ class FindRectangle:
 
         diferenca = abs(compX - compY)
 
-        #print compX, compY
-        #print diferenca
+        print compX, compY
+        print diferenca
 
         if compY < 30:
             return False
-            
-        return diferenca > 40 # if true eh retangulo else bola preta
+
+        return diferenca > 100 # if true eh retangulo else bola preta
 
     def getArea(self, cnt): return cv2.contourArea(cnt)
 
@@ -114,6 +114,8 @@ class FindRectangle:
                     self.drawRectangle(cnt, 6)
                     areaBool = BoolStamped()
                     areaBool.existe.data = True
+                    if area > 220:
+                        areaBool.centroid.data = 666 # robo muito proximo a area
                     areaBool.centroid.data = int(cX - self.CENTER_X)
                     self.pub.publish(areaBool)
                 else:

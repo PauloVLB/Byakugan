@@ -18,11 +18,11 @@ class Garras():
         self.ANG_FINAL_SUBIR_BRACO = 110
 
         # mao
-        self.ANG_INICIAL_ABRIR_MAO = 86
-        self.ANG_FINAL_ABRIR_MAO = 30
+        self.ANG_INICIAL_ABRIR_MAO = 0
+        self.ANG_FINAL_ABRIR_MAO = 60
 
-        self.ANG_INICIAL_FECHAR_MAO = 30
-        self.ANG_FINAL_FECHAR_MAO = 86
+        self.ANG_INICIAL_FECHAR_MAO = 60
+        self.ANG_FINAL_FECHAR_MAO = 0
 
         self.DELAY = 0.005
         self.BRACO = 1 # diferenciando a publicacao para o braco e a mao
@@ -31,7 +31,7 @@ class Garras():
         self.cacheBraco = 2 # levantado
         self.cacheMao = 2 # fechada
 
-        self.angAtualMao = 80
+        self.angAtualMao = 0
         self.angAtualBraco = 110
 
         # publisher

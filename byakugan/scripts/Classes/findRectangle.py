@@ -52,9 +52,13 @@ class FindRectangle:
 
         diferenca = abs(compX - compY)
 
+        #print compX, compY
         #print diferenca
 
-        return diferenca > 20 # if true eh retangulo else bola preta
+        if compY < 30:
+            return False
+            
+        return diferenca > 40 # if true eh retangulo else bola preta
 
     def getArea(self, cnt): return cv2.contourArea(cnt)
 

@@ -10,7 +10,8 @@ from byakugan.msg import BoolStamped, SensoresDistanciaMsg, BotoesMsg
 class FindBalls:
     def __init__(self):
         rospy.init_node("FindBalls", anonymous=True)
-    
+        rospy.on_shutdown(self.pegarVitima)
+        
         self.motores = Int32MultiArray()
         self.pubMotores = rospy.Publisher("ctrl_motores", Int32MultiArray, queue_size=10)
         
@@ -28,10 +29,12 @@ class FindBalls:
 
         if circle.existe.data:
             self.acionarMotores(0, 0)
-            os.system("rosrun byakugan pegarVitima.py")
+            os.system("rosnode kill /findBalls")
         else:
             self.acionarMotores(25, -25)
 
+    def pegarVitima(self):
+        os.system("rosrun byakugan pegarVitima.py")
     def acionarMotores(self, esq, dir):
         self.motores.data = [esq, dir]
         rospy.loginfo(self.motores.data)

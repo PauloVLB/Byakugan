@@ -1,5 +1,4 @@
 <launch>
   <node pkg="byakugan" type="garras.py" name="garras"/>
   <node pkg="byakugan" type="motores.py" name="motores"/>
-	<node pkg="byakugan" type="teleop.py" name="teleop" output="screen" launch-prefix="xterm -e"/>
 </launch>

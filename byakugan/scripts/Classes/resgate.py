@@ -48,10 +48,11 @@ class Resgate():
                 if sonar.sensoresDistancia[0] < 6:
                     self.resgatou = True
                     self.cmd.roboAcionarMotores(0, 0)
+                    self.cmd.roboAcionarMotores(0, 0)
                     self.cmdGarras.resgatar()
                     self.cmdGarras.resgatar()
                 else:
-                    self.cmd.roboAcionarMotores(25, 25)
+                    self.cmd.roboAcionarMotores(30, 34)
         else:
             if areaBool.existe.data == False:
                 rospy.loginfo("cade a tete?")

@@ -52,8 +52,8 @@ def callback(img):
 
 	imgCV = acharCirculos(imgCV)
 
-	cv2.namedWindow('LISTENER_1', cv2.WINDOW_NORMAL)
-	cv2.imshow('LISTENER_1', imgCV)
+	cv2.namedWindow('SHOW_DE_BOLA', cv2.WINDOW_NORMAL)
+	cv2.imshow('SHOW_DE_BOLA', imgCV)
 	cv2.waitKey(1)
 
 def listenerImg():

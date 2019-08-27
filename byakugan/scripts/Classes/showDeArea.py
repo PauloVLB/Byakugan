@@ -3,20 +3,26 @@
 import rospy
 import cv2
 import numpy as np
-import os
 from sensor_msgs.msg import CompressedImage
-from byakugan.msg import BoolStamped
 
-class FindRectangle:
+class ShowDeArea():
     def __init__(self):
-        rospy.init_node('findRectangle', anonymous=False)
+        rospy.init_node('showDeArea', anonymous=False)
 
-        self.pub = rospy.Publisher('centroid_rectangle', BoolStamped, queue_size=10, latch=True)
         rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, self.callback)
 
         self.img = None
         self.thresh = None
-        self.CENTER_X = int((320/2))
+
+    def showImg(self):
+        cv2.namedWindow('thresh', cv2.WINDOW_NORMAL)
+        cv2.imshow('thresh', self.thresh)
+        cv2.namedWindow('SHOW_DE_AREA', cv2.WINDOW_NORMAL)
+        cv2.imshow('SHOW_DE_AREA', self.img)
+        cv2.waitKey(1)
+
+    def drawCentroid(self, cX, cY):
+        cv2.circle(self.img, (cX, cY), 10, (0, 255, 0), -1)
 
     def isBigDist(self, approx):
         approxRavel = approx.ravel() # transforma em um vetor
@@ -97,20 +103,9 @@ class FindRectangle:
 
                 if self.isBigDist(approx): # verifica se o contorno eh retangulo
                     # draw centro do contorno e retangulo no contorno
-                    print area
-
-                    areaBool = BoolStamped()
-                    areaBool.existe.data = True
-
-                    if area > 20000.0:
-                        areaBool.centroid.data = 111 # robo muito proximo a area
-                    else:
-                        areaBool.centroid.data = int(cX - self.CENTER_X)
-                    self.pub.publish(areaBool)
-                else:
-                    areaBool = BoolStamped()
-                    areaBool.existe.data = False
-                    self.pub.publish(areaBool)
+                    #print area
+                    self.drawCentroid(cX, cY)
+                    self.drawRectangle(cnt, 6)
 
         except: # ???
             print 'error in img'
@@ -120,7 +115,8 @@ class FindRectangle:
     	self.img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     	self.img = cv2.flip(self.img, 2)
         self.find()
+        self.showImg()
 
 if __name__ == "__main__":
-    fr = FindRectangle()
+    sa = ShowDeArea()
     rospy.spin()

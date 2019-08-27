@@ -2,6 +2,7 @@
 
 import rospy
 from byakugan.msg import BoolGarras
+import time
 
 class CmdGarras:
     def __init__(self, pub):
@@ -14,9 +15,9 @@ class CmdGarras:
         self.pub.publish(self.dataGarras)
         self.abrirMao()
         for i in range (0, 4):
-            self.dataGarras.braco.data = 86
+            self.dataGarras.braco.data = 72
             self.pub.publish(self.dataGarras)
-            self.dataGarras.braco.data = 68
+            self.dataGarras.braco.data = 80
             self.pub.publish(self.dataGarras)
 
         self.fecharMao()

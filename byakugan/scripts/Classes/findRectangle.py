@@ -52,8 +52,8 @@ class FindRectangle:
 
         diferenca = abs(compX - compY)
 
-        print compX, compY
-        print diferenca
+        #print compX, compY
+        #print diferenca
 
         if compY < 30:
             return False
@@ -102,7 +102,6 @@ class FindRectangle:
                 #print cX, cY
 
                 area = self.getArea(cnt)
-                #print area
 
                 # aproxima pontos do contorno - corners
                 approx = cv2.approxPolyDP(cnt, .03 * cv2.arcLength(cnt, True), True)
@@ -110,13 +109,16 @@ class FindRectangle:
 
                 if self.isBigDist(approx): # verifica se o contorno eh retangulo
                     # draw centro do contorno e retangulo no contorno
+                    print area
+
                     self.drawCentroid(cX, cY)
                     self.drawRectangle(cnt, 6)
                     areaBool = BoolStamped()
                     areaBool.existe.data = True
-                    if area > 220:
-                        areaBool.centroid.data = 666 # robo muito proximo a area
-                    areaBool.centroid.data = int(cX - self.CENTER_X)
+                    if area > 20000.0:
+                        areaBool.centroid.data = 111 # robo muito proximo a area
+                    else:
+                        areaBool.centroid.data = int(cX - self.CENTER_X)
                     self.pub.publish(areaBool)
                 else:
                     areaBool = BoolStamped()

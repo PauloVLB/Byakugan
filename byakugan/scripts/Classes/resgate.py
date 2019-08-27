@@ -21,6 +21,8 @@ class Resgate():
 
         self.encontrou = False
         self.resgatou = False
+        self.estouPerto = False
+        self.qntFalse = 0
 
         subCentroid = message_filters.Subscriber('centroid_rectangle', BoolStamped)
         subSonar = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
@@ -41,9 +43,17 @@ class Resgate():
     '''
     def callback(self, areaBool, sonar):
 
-        if not self.encontrou:
+        if self.encontrou:
+            if not self.resgatou:
+                if sonar.sensoresDistancia[0] < 6:
+                    self.resgatou = True
+                    self.cmd.roboAcionarMotores(0, 0)
+                    self.cmdGarras.resgatar()
+                    self.cmdGarras.resgatar()
+                else:
+                    self.cmd.roboAcionarMotores(25, 25)
+        else:
             if areaBool.existe.data == False:
-                #self.publishLeds(0, 1, 0)
                 rospy.loginfo("cade a tete?")
                 self.cmd.roboAcionarMotores(25, -25)
             else:
@@ -59,16 +69,8 @@ class Resgate():
                     #pass
                 elif not self.encontrou:
                     rospy.loginfo("achei a tete!!!")
-                    self.cmd.roboAcionarMotores(0, 0)
                     self.encontrou = True
-        elif not self.resgatou:
-            if sonar.sensoresDistancia[0] < 6:
-                self.cmd.roboAcionarMotores(0, 0)
-                for i in range(0, 4):
-                    self.cmdGarras.resgatar()
-                    self.resgatou = True
-            else:
-                self.cmd.roboAcionarMotores(25, 25)
+                    self.cmd.roboAcionarMotores(0, 0)
 
 
 

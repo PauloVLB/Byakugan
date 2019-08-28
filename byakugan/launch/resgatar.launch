@@ -1,4 +1,0 @@
-<launch>
-  <node pkg="byakugan" type="findRectangle.py" name="findRectangle"/>
-  <node pkg="byakugan" type="resgate.py" name="resgate"/>
-</launch>

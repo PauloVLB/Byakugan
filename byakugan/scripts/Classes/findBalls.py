@@ -11,11 +11,12 @@ from byakugan.msg import BoolStamped, SensoresDistanciaMsg, BotoesMsg, CtrlMotor
 class FindBalls:
     def __init__(self):
         rospy.init_node("findBalls", anonymous=False)
+
         self.achouVitima = False
         self.executou = False
 
         self.pubMotores = rospy.Publisher("cmdMotores", CtrlMotores, queue_size=10)
-        self.pubPegar = rospy.Publisher("initPegar", Bool, queue_size=10)
+        self.pubPegar = rospy.Publisher("initPegar", BoolStamped, queue_size=10, latch=True)
 
         self.cmd = cmdMotores.CmdMotores(self.pubMotores)
         subCoordinates = message_filters.Subscriber('coordenadas_circulos', Vector3Stamped)
@@ -25,14 +26,14 @@ class FindBalls:
         ts.registerCallback(self.ballsCb)
 
     def initPegar(self):
-        initData = Bool()
-        initData.data = True
-        self.pubResgatar.publish(initData)
+        initData = BoolStamped()
+        initData.existe.data = True
+        self.pubPegar.publish(initData)
         self.executou = True
 
     def ballsCb(self, coordinates, circle):
 
-        if self.executou == False:            
+        if self.executou == False:
             x, y, r = coordinates.vector.x, coordinates.vector.y, coordinates.vector.z
 
             if circle.existe.data:
@@ -44,14 +45,15 @@ class FindBalls:
                     self.initPegar()
 
                     '''
-                    if x in numpy.arange(20, 280, 1):
+                    if x in numpy.arange(200, 280, 1):
                         self.cmd.roboAcionarMotores(0, 0)
                         self.pegarVitima()
                     '''
             else:
                 self.cmd.roboAcionarMotores(25, -25)
         else:
-            rospy.loginfo('estou true')
+            self.initPegar()
+            rospy.loginfo('ja executei')
 
 if __name__ == "__main__":
     node = FindBalls()

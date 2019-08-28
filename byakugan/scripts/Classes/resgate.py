@@ -22,57 +22,47 @@ class Resgate():
         self.encontrou = False
         self.resgatou = False
         self.estouPerto = False
-        self.qntFalse = 0
 
+        self.executou = False
+
+        subInit = message_filters.Subscriber('initResgatar', BoolStamped)
         subCentroid = message_filters.Subscriber('centroid_rectangle', BoolStamped)
         subSonar = message_filters.Subscriber('distancia', SensoresDistanciaMsg)
 
-        ts = message_filters.TimeSynchronizer([subCentroid, subSonar], 20)
+        ts = message_filters.TimeSynchronizer([subInit, subCentroid, subSonar], 20)
         ts.registerCallback(self.callback)
-    '''
-    def acionarMotores(self, esq, dir):
-        self.motores.data = [esq, dir]
-        rospy.loginfo(self.motores.data)
-        self.pubMotores.publish(self.motores)
 
-    def publishLeds(self, led1, led2, led3):
-        self.dataLeds.led1.data = led1
-        self.dataLeds.led2.data = led2
-        self.dataLeds.led3.data = led3
-        self.pubLeds.publish(self.dataLeds)
-    '''
-    def callback(self, areaBool, sonar):
-
-        if self.encontrou:
-            if not self.resgatou:
+    def callback(self, init, areaBool, sonar):
+        if init.existe.data and not self.executou:
+            if self.encontrou and not self.resgatou:
                 if sonar.sensoresDistancia[0] < 6:
                     self.resgatou = True
-                    self.cmd.roboAcionarMotores(0, 0)
-                    self.cmd.roboAcionarMotores(0, 0)
+                    self.cmd.roboParar(0.8)
                     self.cmdGarras.resgatar()
-                    self.cmdGarras.resgatar()
+                    self.executou = True
                 else:
                     self.cmd.roboAcionarMotores(30, 34)
-        else:
-            if areaBool.existe.data == False:
-                rospy.loginfo("cade a tete?")
-                self.cmd.roboAcionarMotores(25, -25)
             else:
-                if areaBool.centroid.data > 30: # area na esq
-                    #self.publishLeds(1, 0, 0)
-                    rospy.loginfo("area na esq")
-                    self.cmd.roboAcionarMotores(-25, 25)
-                    #pass
-                elif areaBool.centroid.data < -50: # area na dir
-                    #self.publishLeds(0, 0, 1)
-                    rospy.loginfo("area na dir")
+                if areaBool.existe.data == False:
+                    rospy.loginfo("cade a tete?")
                     self.cmd.roboAcionarMotores(25, -25)
-                    #pass
-                elif not self.encontrou:
-                    rospy.loginfo("achei a tete!!!")
-                    self.encontrou = True
-                    self.cmd.roboAcionarMotores(0, 0)
-
+                else:
+                    if areaBool.centroid.data > 30: # area na esq
+                        #self.publishLeds(1, 0, 0)
+                        rospy.loginfo("area na esq")
+                        self.cmd.roboAcionarMotores(-25, 25)
+                        #pass
+                    elif areaBool.centroid.data < -50: # area na dir
+                        #self.publishLeds(0, 0, 1)
+                        rospy.loginfo("area na dir")
+                        self.cmd.roboAcionarMotores(25, -25)
+                        #pass
+                    elif not self.encontrou:
+                        rospy.loginfo("achei a tete!!!")
+                        self.encontrou = True
+                        self.cmd.roboParar(1)
+        else:
+            rospy.loginfo('resgatei a tete')
 
 
 if __name__ == "__main__":

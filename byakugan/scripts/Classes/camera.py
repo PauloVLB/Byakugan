@@ -24,17 +24,17 @@ class Camera:
         finally:
             self.__lock.release()
     
-    def getCoordenadasVitima():
+    def getCoordenadasVitima(self):
         self.__lock.acquire()
         try:
             return self.__coordenadas
-        finally
+        finally:
             self.__lock.release()
     
-    def getVitima():
+    def getVitima(self):
         self.__lock.acquire()
         try:
-            return self.__vitima
-        finally
+            return self.__vitima.existe.data
+        finally:
             self.__lock.release()
     

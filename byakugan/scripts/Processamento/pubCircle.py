@@ -40,7 +40,7 @@ def pubCirculosEm(img):
 	rows = cinza.shape[1]
 
  	circles = cv2.HoughCircles(cinza, cv2.HOUGH_GRADIENT, 1.2, rows/8,
- 		param1=100, param2=30, minRadius=10, maxRadius=100)
+ 		param1=45, param2=30, minRadius=10, maxRadius=100)
 
 	dispo(copiaImg, circles)
 

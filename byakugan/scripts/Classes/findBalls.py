@@ -17,6 +17,8 @@ class FindBalls:
         self.entrouNaSala = False
         self.podeExecutar = False
 
+        self.qntAchou = 0
+
         self.pubMotores = rospy.Publisher("cmdMotores", CtrlMotores, queue_size=10)
         self.pubPegar = rospy.Publisher("initPegar", BoolStamped, queue_size=10, latch=True)    
 
@@ -49,20 +51,29 @@ class FindBalls:
                 if(self.entrouNaSala):
                     if circle.existe.data:
                         self.achouVitima = True
+                        
                         if self.achouVitima:
-                            self.cmd.roboDir(.07)
                             self.cmd.roboAcionarMotores(0, 0)
-
-                            #self.initPegar()
+                            
                             rospy.loginfo("achei a tete")
+                            #self.executou = True
+                            #self.initPegar()
+
                             '''
                             if x in numpy.arange(200, 280, 1):
                                 self.cmd.roboAcionarMotores(0, 0)
                                 self.pegarVitima()
                             '''
                     else:
+                        '''
+                        if not self.qntAchou < 0:
+                            self.qntAchou = self.qntAchou - 1
+                        else:
+                            self.qntAchou = 0
+
                         rospy.loginfo("cade a tete")
-                        self.cmd.roboAcionarMotores(-30, 30, .3)
+                        '''
+                        self.cmd.roboAcionarMotores(-30, 30)
                 else: 
                     rospy.loginfo("rampa")
                     self.cmd.roboAcionarMotores(50, 54)

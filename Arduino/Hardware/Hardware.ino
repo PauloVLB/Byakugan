@@ -91,13 +91,15 @@ void setup() {
   robo.configurar(true);
   robo.acionarServoGarra2(130);
   robo.acionarServoGarra1(100);
-  //robo.habilitaTCS34();
+  //robo.habilitaTCS34(); 
 }
 
 void loop() {
   
   dataRefletancia.refletancia[0] = robo.lerSensorLinhaMaisEsqSemRuido();
   dataRefletancia.refletancia[1] = robo.lerSensorLinhaEsqSemRuido();
+
+  
   dataRefletancia.refletancia[2] = robo.lerSensorLinhaDirSemRuido();
   dataRefletancia.refletancia[3] = robo.lerSensorLinhaMaisDirSemRuido();
 

@@ -1,5 +1,7 @@
 # Byakugan: Visão Computacional
 
+Repositório mais atualizado <a href="https://github.com/PauloVLB/byakuganv2">aqui</a>.
+
 #### Orientandos:
 - Douglas Gabriel da Silva Araújo;
 - Isaac Marlon da Silva Lourenço;
